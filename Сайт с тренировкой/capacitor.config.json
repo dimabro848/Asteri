@@ -1,0 +1,9 @@
+{
+  "appId": "com.asteri.rpg",
+  "appName": "Asteri",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": false
+  }
+}
