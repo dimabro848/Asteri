@@ -16,17 +16,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root{
-      --bg0:#0b0c12;
-      --bg1:#111226;
-      --ink:#eef0ff;
-      --muted:rgba(238,240,255,.72);
-      --stroke:rgba(255,255,255,.12);
-      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --bg0:#0a1114;
+      --bg1:#0f1b22;
+      --ink:#eef7f8;
+      --muted:rgba(238,247,248,.68);
+      --stroke:rgba(255,255,255,.10);
+      --shadow:0 18px 60px rgba(0,0,0,.48);
 
-      --gold:#f5c34b;
-      --ember:#ff5b3a;
-      --mint:#23d7a2;
-      --sky:#54a6ff;
+      --gold:#f2c35c;
+      --ember:#ff7a59;
+      --mint:#21c8a5;
+      --sky:#6ab6ff;
+      --deep:#0e2b2f;
 
       --r:18px;
       --r2:26px;
@@ -43,9 +44,9 @@
       color:var(--ink);
       font-family:var(--b);
       background:
-        radial-gradient(1200px 800px at 10% -10%, rgba(255,91,58,.28), transparent 55%),
-        radial-gradient(900px 700px at 110% 10%, rgba(84,166,255,.26), transparent 58%),
-        radial-gradient(900px 700px at 50% 110%, rgba(35,215,162,.16), transparent 58%),
+        radial-gradient(1100px 760px at 12% -10%, rgba(33,200,165,.25), transparent 55%),
+        radial-gradient(900px 700px at 110% 8%, rgba(242,195,92,.22), transparent 58%),
+        radial-gradient(900px 700px at 50% 110%, rgba(255,122,89,.16), transparent 58%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
@@ -121,7 +122,7 @@
       letter-spacing:.2px;
       font-size:12px;
     }
-    .badge .dot{width:8px;height:8px;border-radius:99px;background:var(--gold);box-shadow:0 0 0 6px rgba(245,195,75,.16)}
+    .badge .dot{width:8px;height:8px;border-radius:99px;background:var(--mint);box-shadow:0 0 0 6px rgba(33,200,165,.14)}
     .name{display:flex;align-items:center;gap:8px;min-width:0}
     .name input{
       width:100%;
@@ -141,10 +142,10 @@
     .xpfill{
       height:100%;
       width:0%;
-      background:linear-gradient(90deg, var(--gold), var(--ember));
+      background:linear-gradient(90deg, var(--mint), var(--gold));
       border-radius:999px;
       transition:width .45s ease;
-      box-shadow:0 0 18px rgba(245,195,75,.26);
+      box-shadow:0 0 18px rgba(33,200,165,.24);
     }
 
     .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:12px;align-items:start}
@@ -177,7 +178,7 @@
       padding:12px;
       border:1px solid rgba(255,255,255,.12);
       border-radius:var(--r);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
     }
     .card:hover{border-color:rgba(255,255,255,.18)}
     .card .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -213,7 +214,7 @@
     .btn{
       border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.20);
+      background:rgba(0,0,0,.16);
       padding:10px 14px;
       font-weight:700;
       font-size:13px;
@@ -223,19 +224,20 @@
     .btn:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.06)}
     .btn:active{transform:translateY(1px)}
     .btn.primary{
-      border-color:rgba(245,195,75,.35);
-      background:linear-gradient(180deg, rgba(245,195,75,.20), rgba(255,91,58,.14));
+      border-color:rgba(33,200,165,.35);
+      background:linear-gradient(180deg, rgba(33,200,165,.22), rgba(33,200,165,.12));
     }
-    .btn.primary:hover{border-color:rgba(245,195,75,.55)}
+    .btn.primary:hover{border-color:rgba(33,200,165,.55)}
     .btn.mint{
-      border-color:rgba(35,215,162,.35);
-      background:linear-gradient(180deg, rgba(35,215,162,.16), rgba(35,215,162,.08));
+      border-color:rgba(242,195,92,.35);
+      background:linear-gradient(180deg, rgba(242,195,92,.20), rgba(242,195,92,.10));
     }
     .btn.danger{
-      border-color:rgba(255,91,58,.40);
-      background:linear-gradient(180deg, rgba(255,91,58,.18), rgba(255,91,58,.10));
+      border-color:rgba(255,122,89,.40);
+      background:linear-gradient(180deg, rgba(255,122,89,.18), rgba(255,122,89,.10));
     }
     .btn.ghost{border-color:rgba(255,255,255,.10);background:transparent}
+    .btn.sm{padding:6px 10px;font-size:12px}
     .icon-btn{
       width:44px;height:44px;
       border-radius:14px;
@@ -299,7 +301,7 @@
       box-shadow:0 0 0 4px rgba(245,195,75,.09);
     }
     @media (max-width: 640px){
-      .wrap{padding:16px 14px 118px}
+      .wrap{padding:16px 14px 122px}
       .brand{border-radius:22px}
       .player{border-radius:22px}
       .panel{border-radius:22px}
@@ -307,6 +309,7 @@
       .tab{gap:8px;font-size:12px}
       .tab svg{width:20px;height:20px}
       .btn{padding:11px 16px}
+      .action-grid{grid-template-columns:1fr}
     }
 
     .view{display:none}
@@ -329,7 +332,7 @@
     }
     .toast.show{display:flex;animation:pop .6s ease}
     @keyframes pop{0%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.98)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
-    .toast .xp{font-family:var(--h);color:var(--gold);font-weight:700}
+    .toast .xp{font-family:var(--h);color:var(--mint);font-weight:700}
 
     .modalbg{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.62);z-index:90;padding:16px}
     .modalbg.open{display:grid}
@@ -439,18 +442,31 @@
           </div>
 
           <div class="panel">
-            <h2>Быстрые действия</h2>
-            <p class="hint">Засчитать XP за маленькую победу или завершить тренировку одним кликом.</p>
-            <div class="btns">
-              <button class="btn primary" data-xp="10" data-reason="Маленькая победа">+10 XP</button>
-              <button class="btn" data-xp="25" data-reason="Дисциплина">+25 XP</button>
-              <button class="btn mint" id="go-training">Тренировки</button>
-              <button class="btn" id="go-quests">Квесты</button>
+            <div class="section-head">
+              <h2>Команды</h2>
+              <p class="meta">быстрый доступ</p>
             </div>
-
-            <div class="card" style="margin-top:12px">
-              <div class="t"><strong>Подсказка</strong><span class="badge" style="border-color:rgba(84,166,255,.28)"><span class="dot" style="background:var(--sky);box-shadow:0 0 0 6px rgba(84,166,255,.12)"></span>Фокус</span></div>
-              <div class="meta">Один квест + одна тренировка в день уже двигают тебя вперёд.</div>
+            <div class="action-grid">
+              <div class="action-card">
+                <h3>Быстрый XP</h3>
+                <p>Мини‑успехи и дисциплина без лишних экранов.</p>
+                <div class="action-row">
+                  <button class="btn primary sm" data-xp="10" data-reason="Маленькая победа">+10</button>
+                  <button class="btn sm" data-xp="25" data-reason="Дисциплина">+25</button>
+                </div>
+              </div>
+              <div class="action-card">
+                <h3>Перейти</h3>
+                <p>Открой нужный раздел одним тапом.</p>
+                <div class="action-row">
+                  <button class="btn mint sm" id="go-training">Тренировки</button>
+                  <button class="btn sm" id="go-quests">Квесты</button>
+                </div>
+              </div>
+              <div class="action-card" style="grid-column:1 / -1">
+                <h3>Фокус дня</h3>
+                <p>Один квест + одна тренировка в день уже двигают тебя вперёд.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1231,3 +1247,26 @@
   </script>
 </body>
 </html>
+    .section-head{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px
+    }
+    .section-head h2{margin:0}
+    .section-head .meta{margin:0}
+    .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .action-card{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,255,255,.04);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .action-card h3{
+      margin:0;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .action-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
+    .action-row{display:flex;gap:8px;flex-wrap:wrap}
