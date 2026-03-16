@@ -161,16 +161,26 @@
       border-radius:var(--r2);
       background:#ffffff;
       box-shadow:var(--shadow);
-      padding:14px;
+      padding:16px;
     }
     .panel h2{
-      margin:0 0 8px;
+      margin:0;
       font-family:var(--h);
-      font-size:14px;
+      font-size:15px;
       letter-spacing:.25px;
     }
-    .hint{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+    .hint{margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.35}
     .panel.full{grid-column:1 / -1}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      background:rgba(126,107,255,.10);
+      border:1px solid rgba(126,107,255,.20);
+      font-size:11px;font-weight:700;color:#5d4fff;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+    }
 
     .cards{display:grid;gap:10px;margin-top:10px}
     .card{
@@ -240,7 +250,14 @@
       color:#ffffff;
     }
     .btn.ghost{border-color:rgba(31,29,43,.10);background:transparent}
-    .btn.sm{padding:6px 10px;font-size:12px}
+    .btn.sm{padding:7px 12px;font-size:12px}
+    .btn.chip{
+      border-radius:14px;
+      background:#f6f3ff;
+      border:1px solid rgba(126,107,255,.20);
+      color:#554cff;
+      font-weight:700;
+    }
     .icon-btn{
       width:44px;height:44px;
       border-radius:14px;
@@ -440,23 +457,36 @@
       <section class="view active" data-view="home">
         <div class="grid">
           <div class="panel">
-            <h2>Сегодня</h2>
+            <div class="panel-head">
+              <h2>Сегодня</h2>
+              <span class="pill">Asteri</span>
+            </div>
             <p class="hint" id="today-hint">Сделай хотя бы один шаг, чтобы поддержать серию.</p>
             <div class="cards" id="today-list"></div>
+            <div class="mini-grid" style="margin-top:10px">
+              <div class="mini-card">
+                <strong>Фокус</strong>
+                <span>Один квест + тренировка</span>
+              </div>
+              <div class="mini-card">
+                <strong>Ритм</strong>
+                <span>Делай понемногу каждый день</span>
+              </div>
+            </div>
           </div>
 
           <div class="panel">
-            <div class="section-head">
+            <div class="panel-head">
               <h2>Команды</h2>
-              <p class="meta">быстрый доступ</p>
+              <span class="pill">Быстро</span>
             </div>
             <div class="action-grid">
               <div class="action-card">
                 <h3>Быстрый XP</h3>
                 <p>Мини‑успехи и дисциплина без лишних экранов.</p>
                 <div class="action-row">
-                  <button class="btn primary sm" data-xp="10" data-reason="Маленькая победа">+10</button>
-                  <button class="btn sm" data-xp="25" data-reason="Дисциплина">+25</button>
+                  <button class="btn chip sm" data-xp="10" data-reason="Маленькая победа">+10</button>
+                  <button class="btn chip sm" data-xp="25" data-reason="Дисциплина">+25</button>
                 </div>
               </div>
               <div class="action-card">
@@ -477,10 +507,13 @@
 
         <div class="grid" style="margin-top:12px">
           <div class="panel full">
-            <h2>Напоминания</h2>
+            <div class="panel-head">
+              <h2>Напоминания</h2>
+              <span class="pill">Ежедневно</span>
+            </div>
             <p class="hint" id="rem-hint">Уведомления работают в APK. В браузере напоминания не приходят.</p>
             <div class="btns">
-              <button class="btn ghost" id="rem-perm">Разрешить уведомления</button>
+              <button class="btn ghost sm" id="rem-perm">Разрешить уведомления</button>
             </div>
             <div class="cards" id="rem-list"></div>
             <form class="form" id="rem-form" style="margin-top:8px">
@@ -1252,7 +1285,7 @@
 </body>
 </html>
     .section-head{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px
+      display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px
     }
     .section-head h2{margin:0}
     .section-head .meta{margin:0}
@@ -1274,3 +1307,13 @@
     }
     .action-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
     .action-row{display:flex;gap:8px;flex-wrap:wrap}
+    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .mini-card{
+      border:1px solid rgba(31,29,43,.08);
+      background:#f8f6ff;
+      border-radius:14px;
+      padding:10px;
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .mini-card strong{font-size:12px}
+    .mini-card span{font-size:11px;color:var(--muted)}
