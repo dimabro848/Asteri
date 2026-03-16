@@ -39,31 +39,32 @@ jobs:
             npx cap add android
           fi
 
-      - name: Generate icons and splash
-        working-directory: "Сайт с тренировкой"
-        run: npx @capacitor/assets generate --android --iconBackgroundColor "#000000" --splashBackgroundColor "#000000"
-
       - name: Sync Capacitor
         working-directory: "Сайт с тренировкой"
         run: npx cap sync android
 
       - name: Prepare release signing
+        # Важно: работаем в папке android/app, чтобы файл ключа лег рядом с build.gradle
         working-directory: "Сайт с тренировкой/android/app"
         env:
+          # Используем содержимое твоего файла asteri.keystore.b64
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          printf "%s" "$KEYSTORE_B64" | tr -d '\n' | base64 -d > asteri.keystore
+          # Очищаем строку от возможных пробелов и декодируем
+          echo "$KEYSTORE_B64" | tr -d '[:space:]' | base64 --decode > asteri.keystore
+          
+          # Создаем файл настроек подписи
           cat > signing.gradle <<'EOF'
           android {
               signingConfigs {
                   release {
                       storeFile file("asteri.keystore")
-                      storePassword System.getenv("KEYSTORE_PASSWORD")
-                      keyAlias System.getenv("KEY_ALIAS")
-                      keyPassword System.getenv("KEY_PASSWORD")
+                      storePassword System.getenv("SIGNING_STORE_PASSWORD")
+                      keyAlias System.getenv("SIGNING_KEY_ALIAS")
+                      keyPassword System.getenv("SIGNING_KEY_PASSWORD")
                   }
               }
               buildTypes {
@@ -73,13 +74,20 @@ jobs:
               }
           }
           EOF
+          
+          # Подключаем наш signing.gradle к основному build.gradle
           if ! grep -q 'signing.gradle' build.gradle; then
-            echo 'apply from: "signing.gradle"' >> build.gradle
+            echo -e "\napply from: \"signing.gradle\"" >> build.gradle
           fi
 
       - name: Build Release APK
         working-directory: "Сайт с тренировкой/android"
         run: ./gradlew assembleRelease
+        env:
+          # Прокидываем пароли в переменные окружения для Gradle
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
