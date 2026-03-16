@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#111226" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <title>Asteri</title>
   <meta name="description" content="Asteri: RPG-тренировки с уровнем, XP и квестами." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -164,6 +167,7 @@
       letter-spacing:.25px;
     }
     .hint{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+    .panel.full{grid-column:1 / -1}
 
     .cards{display:grid;gap:10px;margin-top:10px}
     .card{
@@ -177,6 +181,31 @@
     .card .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .card .t strong{font-size:13px}
     .meta{color:var(--muted);font-size:12px;margin-top:4px}
+
+    .rem-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .rem-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .rem-time{
+      font-weight:800;
+      font-size:14px;
+      letter-spacing:.5px;
+      padding:6px 10px;
+      border-radius:12px;
+      background:rgba(245,195,75,.12);
+      border:1px solid rgba(245,195,75,.25);
+      color:#ffd98c;
+      flex:0 0 auto;
+    }
+    .rem-title{min-width:0}
+    .rem-title strong{display:block;font-size:13px}
+    .rem-title span{display:block;color:var(--muted);font-size:12px}
+    .rem-right{display:flex;align-items:center;gap:8px}
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
 
     .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .btn{
@@ -399,6 +428,36 @@
             </div>
           </div>
         </div>
+
+        <div class="grid" style="margin-top:12px">
+          <div class="panel full">
+            <h2>Напоминания</h2>
+            <p class="hint" id="rem-hint">Уведомления работают в APK. В браузере напоминания не приходят.</p>
+            <div class="btns">
+              <button class="btn ghost" id="rem-perm">Разрешить уведомления</button>
+            </div>
+            <div class="cards" id="rem-list"></div>
+            <form class="form" id="rem-form" style="margin-top:8px">
+              <div class="field wide">
+                <label for="rem-title">Название</label>
+                <input id="rem-title" type="text" placeholder="Например: Вода" />
+              </div>
+              <div class="field">
+                <label for="rem-time">Время</label>
+                <input id="rem-time" type="time" required />
+              </div>
+              <div class="field">
+                <label for="rem-daily">Повтор</label>
+                <select id="rem-daily">
+                  <option value="daily">Ежедневно</option>
+                </select>
+              </div>
+              <div class="btns" style="margin-top:0">
+                <button class="btn primary" type="submit">Добавить</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
 
       <section class="view" data-view="training">
@@ -566,7 +625,10 @@
         player: { name: "Герой", xp: 0, streak: 0, lastCompleteDay: null },
         workouts: seedWorkouts(),
         quests: seedQuests(),
-        log: []
+        log: [],
+        reminders: [],
+        nextReminderId: 1,
+        notificationsEnabled: false
       };
     }
     function loadState(){
@@ -582,6 +644,9 @@
         merged.workouts = Array.isArray(data.workouts) ? data.workouts : merged.workouts;
         merged.quests = Array.isArray(data.quests) ? data.quests : merged.quests;
         merged.log = Array.isArray(data.log) ? data.log : merged.log;
+        merged.reminders = Array.isArray(data.reminders) ? data.reminders : merged.reminders;
+        merged.nextReminderId = clampInt(data.nextReminderId || merged.nextReminderId, 1, 999999);
+        merged.notificationsEnabled = Boolean(data.notificationsEnabled);
 
         merged.player.xp = clampInt(merged.player.xp, 0, 99999999);
         merged.player.streak = clampInt(merged.player.streak, 0, 99999);
@@ -608,6 +673,12 @@
     const elTodayList = $("today-list");
     const elWorkoutList = $("workout-list");
     const elQuestList = $("quest-list");
+    const elRemList = $("rem-list");
+    const elRemForm = $("rem-form");
+    const elRemTitle = $("rem-title");
+    const elRemTime = $("rem-time");
+    const elRemPerm = $("rem-perm");
+    const elRemHint = $("rem-hint");
     const elToast = $("toast");
     const elToastXp = $("toast-xp");
     const elToastTxt = $("toast-txt");
@@ -638,6 +709,54 @@
       elToast.classList.add("show");
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => elToast.classList.remove("show"), 1400);
+    }
+
+    function isNative(){
+      return Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    }
+    function getLocalNotifications(){
+      return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+    }
+    async function requestNotifyPermission(){
+      const LN = getLocalNotifications();
+      if(!LN) return false;
+      const res = await LN.requestPermissions();
+      const ok = res?.display === "granted" || res?.receive === "granted" || res?.granted === true;
+      S.notificationsEnabled = ok;
+      saveState();
+      updateRemHint();
+      return ok;
+    }
+    function updateRemHint(){
+      if(!isNative()){
+        elRemHint.textContent = "Уведомления работают в APK. В браузере напоминания не приходят.";
+        return;
+      }
+      elRemHint.textContent = S.notificationsEnabled
+        ? "Уведомления включены. Напоминания будут приходить ежедневно."
+        : "Нужно разрешить уведомления, чтобы напоминания работали.";
+    }
+    async function syncReminders(){
+      const LN = getLocalNotifications();
+      if(!LN || !S.notificationsEnabled) return;
+      const ids = S.reminders.map(r => ({ id: r.id }));
+      if(ids.length){
+        try{ await LN.cancel({ notifications: ids }); }catch{}
+      }
+      const list = S.reminders.filter(r => r.enabled);
+      if(!list.length) return;
+      const notifications = list.map(r => {
+        const parts = (r.time || "09:00").split(":");
+        const hour = Number(parts[0] || 9);
+        const minute = Number(parts[1] || 0);
+        return {
+          id: r.id,
+          title: r.title || "Напоминание",
+          body: r.note || "Пора выполнить квест",
+          schedule: { on: { hour, minute }, repeats: true }
+        };
+      });
+      await LN.schedule({ notifications });
     }
 
     function updateStreakOnComplete(){
@@ -831,6 +950,60 @@
       renderHome();
       renderTraining();
       renderQuests();
+      renderReminders();
+      updateRemHint();
+    }
+
+    function renderReminders(){
+      if(!S.reminders.length){
+        elRemList.innerHTML = `
+          <div class="card">
+            <div class="t"><strong>Нет напоминаний</strong><span class="badge"><span class="dot"></span>Старт</span></div>
+            <div class="meta">Добавь напоминания для воды, квестов и тренировок.</div>
+          </div>
+        `;
+        return;
+      }
+      elRemList.innerHTML = S.reminders.map(r => `
+        <div class="card">
+          <div class="rem-item">
+            <div class="rem-left">
+              <div class="rem-time">${r.time || "09:00"}</div>
+              <div class="rem-title">
+                <strong>${esc(r.title || "Напоминание")}</strong>
+                <span>Ежедневно</span>
+              </div>
+            </div>
+            <div class="rem-right">
+              <label class="toggle">
+                <input type="checkbox" data-rem-toggle="${r.id}" ${r.enabled ? "checked" : ""} />
+                Вкл
+              </label>
+              <button class="btn ghost" data-rem-del="${r.id}">Удалить</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      elRemList.querySelectorAll("[data-rem-toggle]").forEach(el => {
+        el.addEventListener("change", async () => {
+          const id = Number(el.getAttribute("data-rem-toggle"));
+          const r = S.reminders.find(x => x.id === id);
+          if(!r) return;
+          r.enabled = el.checked;
+          saveState();
+          await syncReminders();
+        });
+      });
+      elRemList.querySelectorAll("[data-rem-del]").forEach(el => {
+        el.addEventListener("click", async () => {
+          const id = Number(el.getAttribute("data-rem-del"));
+          S.reminders = S.reminders.filter(x => x.id !== id);
+          saveState();
+          renderReminders();
+          await syncReminders();
+        });
+      });
     }
 
     function setTab(tab){
@@ -903,6 +1076,25 @@
       showToast(0, "Квест создан");
     });
 
+    elRemForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const time = (elRemTime.value || "").trim();
+      if(!time) return;
+      const title = (elRemTitle.value || "").trim() || "Напоминание";
+      const item = {
+        id: S.nextReminderId++,
+        title: title.slice(0, 60),
+        time,
+        enabled: true
+      };
+      S.reminders.push(item);
+      saveState();
+      elRemTitle.value = "";
+      renderReminders();
+      await syncReminders();
+      showToast(0, "Напоминание добавлено");
+    });
+
     // Seeds
     $("w-seed").addEventListener("click", () => {
       if(S.workouts.length) return openModal("Базовые тренировки", "У тебя уже есть список. Если хочешь, удали лишнее и добавь базовые заново.");
@@ -919,6 +1111,20 @@
       renderHome();
       renderQuests();
       showToast(0, "Добавлены примеры квестов");
+    });
+
+    elRemPerm.addEventListener("click", async () => {
+      if(!isNative()){
+        openModal("Уведомления", "Эта функция работает в APK. В браузере уведомления не приходят.");
+        return;
+      }
+      const ok = await requestNotifyPermission();
+      if(ok){
+        await syncReminders();
+        showToast(0, "Уведомления включены");
+      }else{
+        openModal("Уведомления", "Разрешение не выдано. Проверь настройки уведомлений на телефоне.");
+      }
     });
 
     // Modal / IO
@@ -955,6 +1161,9 @@
     renderAll();
     const hash = (location.hash || "").replace("#", "");
     if(hash === "training" || hash === "quests" || hash === "home") setTab(hash);
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
   </script>
 </body>
 </html>
