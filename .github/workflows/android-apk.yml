@@ -55,12 +55,12 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_B64" | base64 -d > asteri.keystore
+          echo "$KEYSTORE_B64" | base64 -d > app/asteri.keystore
           cat > app/signing.gradle <<'EOF'
           android {
               signingConfigs {
                   release {
-                      storeFile file("asteri.keystore")
+                      storeFile file("app/asteri.keystore")
                       storePassword System.getenv("KEYSTORE_PASSWORD")
                       keyAlias System.getenv("KEY_ALIAS")
                       keyPassword System.getenv("KEY_PASSWORD")
