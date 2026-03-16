@@ -63,7 +63,9 @@
     button{cursor:pointer}
     .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 110px}
 
-    .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .top{display:grid;gap:12px;margin-bottom:16px}
+    .topbar{display:flex;align-items:center;gap:12px}
+    .topbar .brand{flex:1}
     .brand{
       display:flex;align-items:center;gap:12px;
       padding:14px 16px;
@@ -234,6 +236,14 @@
       background:linear-gradient(180deg, rgba(255,91,58,.18), rgba(255,91,58,.10));
     }
     .btn.ghost{border-color:rgba(255,255,255,.10);background:transparent}
+    .icon-btn{
+      width:44px;height:44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.20);
+      display:grid;place-items:center;
+    }
+    .icon-btn svg{width:20px;height:20px;fill:currentColor;opacity:.9}
 
     .form{display:grid;grid-template-columns:1fr 140px;gap:10px;margin-top:10px}
     .field{display:flex;flex-direction:column;gap:6px}
@@ -374,16 +384,33 @@
     </div>
   </div>
 
+  <div class="modalbg" id="settingsModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Настройки</h3>
+      <p class="hint">Уведомления работают в APK. Здесь можно быстро включить и открыть данные.</p>
+      <div class="btns">
+        <button class="btn mint" id="settings-notify">Уведомления</button>
+        <button class="btn" id="settings-data">Данные</button>
+        <button class="btn ghost" id="settings-close">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <header class="top">
-      <div class="brand">
-        <div class="sigil" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 .8-5.2 4.4 1.7 6.8L12 16.9 5.5 20l1.7-6.8L2 8.8 9 8z"/></svg>
+      <div class="topbar">
+        <div class="brand">
+          <div class="sigil" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 .8-5.2 4.4 1.7 6.8L12 16.9 5.5 20l1.7-6.8L2 8.8 9 8z"/></svg>
+          </div>
+          <div class="title">
+            <h1>Asteri</h1>
+            <div class="subtitle">Выполняй тренировки и квесты, получай XP и повышай уровень.</div>
+          </div>
         </div>
-        <div class="title">
-          <h1>Asteri</h1>
-          <div class="subtitle">Выполняй тренировки и квесты, получай XP и повышай уровень.</div>
-        </div>
+        <button class="icon-btn" id="open-settings" title="Настройки" aria-label="Настройки">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.57 7.57 0 0 0 .05-.94 7.57 7.57 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.35 7.35 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.57.22-1.11.52-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.7 8.86a.5.5 0 0 0 .12.64l2.03 1.58c-.03.31-.05.63-.05.94 0 .31.02.63.05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.51.42 1.05.73 1.62.94l.36 2.54a.5.5 0 0 0 .5.42h3.84a.5.5 0 0 0 .5-.42l.36-2.54c.57-.22 1.11-.52 1.62-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/></svg>
+        </button>
       </div>
 
       <div class="player">
@@ -398,7 +425,6 @@
         </div>
         <div class="row">
           <span class="stat">Серия: <strong id="streak">0</strong> дн.</span>
-          <button class="btn ghost" id="open-io" title="Экспорт/импорт/сброс">Данные</button>
         </div>
       </div>
     </header>
@@ -689,6 +715,11 @@
     const elModalMore = $("modal-more");
     const elIO = $("io");
     const elIOText = $("io-text");
+    const elSettingsModal = $("settingsModal");
+    const elSettingsClose = $("settings-close");
+    const elSettingsNotify = $("settings-notify");
+    const elSettingsData = $("settings-data");
+    const elOpenSettings = $("open-settings");
 
     let toastTimer = null;
 
@@ -698,6 +729,18 @@
       elIO.style.display = "none";
       elModalMore.textContent = "Экспорт/импорт";
       elModalBg.classList.add("open");
+    }
+    function openSettings(){
+      elSettingsModal.classList.add("open");
+    }
+    function closeSettings(){
+      elSettingsModal.classList.remove("open");
+    }
+    function openDataModal(){
+      openModal("Данные", "Экспортируй JSON, чтобы сохранить прогресс. Импорт восстановит.");
+      elIO.style.display = "block";
+      elModalMore.textContent = "Скрыть";
+      elIOText.value = JSON.stringify(S, null, 2);
     }
     function closeModal(){
       elModalBg.classList.remove("open");
@@ -1127,10 +1170,31 @@
       }
     });
 
+    if (elSettingsNotify) {
+      elSettingsNotify.addEventListener("click", async () => {
+        closeSettings();
+        elRemPerm.click();
+      });
+    }
+
     // Modal / IO
     elModalOk.addEventListener("click", closeModal);
     elModalBg.addEventListener("click", (e) => { if(e.target === elModalBg) closeModal(); });
-    $("open-io").addEventListener("click", () => openModal("Данные", "Экспортируй JSON, чтобы сохранить прогресс. Импорт восстановит."));
+    if (elOpenSettings) {
+      elOpenSettings.addEventListener("click", openSettings);
+    }
+    if (elSettingsClose) {
+      elSettingsClose.addEventListener("click", closeSettings);
+    }
+    if (elSettingsModal) {
+      elSettingsModal.addEventListener("click", (e) => { if(e.target === elSettingsModal) closeSettings(); });
+    }
+    if (elSettingsData) {
+      elSettingsData.addEventListener("click", () => {
+        closeSettings();
+        openDataModal();
+      });
+    }
     elModalMore.addEventListener("click", () => {
       const open = elIO.style.display !== "none";
       elIO.style.display = open ? "none" : "block";
