@@ -1,18 +1,66 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install deps
+        working-directory: "Сайт с тренировкой"
+        run: npm install
+
+      - name: Build web
+        working-directory: "Сайт с тренировкой"
+        run: npm run build
+
+      - name: Add Android platform
+        working-directory: "Сайт с тренировкой"
+        run: |
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
+
+      - name: Generate icons and splash
+        working-directory: "Сайт с тренировкой"
+        run: npx @capacitor/assets generate --android --iconBackgroundColor "#000000" --splashBackgroundColor "#000000"
+
+      - name: Sync Capacitor
+        working-directory: "Сайт с тренировкой"
+        run: npx cap sync android
+
       - name: Prepare release signing
-        working-directory: "Сайт с тренировкой/android"
+        working-directory: "Сайт с тренировкой/android/app"
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          printf "%s" "$KEYSTORE_B64" | tr -d '\n' | base64 -d > app/asteri.keystore
-          ls -l app/asteri.keystore
-          cat > app/signing.gradle <<'EOF'
+          printf "%s" "$KEYSTORE_B64" | tr -d '\n' | base64 -d > asteri.keystore
+          cat > signing.gradle <<'EOF'
           android {
               signingConfigs {
                   release {
-                      storeFile file("app/asteri.keystore")
+                      storeFile file("asteri.keystore")
                       storePassword System.getenv("KEYSTORE_PASSWORD")
                       keyAlias System.getenv("KEY_ALIAS")
                       keyPassword System.getenv("KEY_PASSWORD")
@@ -25,6 +73,16 @@
               }
           }
           EOF
-          if ! grep -q 'signing.gradle' app/build.gradle; then
-            echo 'apply from: "signing.gradle"' >> app/build.gradle
+          if ! grep -q 'signing.gradle' build.gradle; then
+            echo 'apply from: "signing.gradle"' >> build.gradle
           fi
+
+      - name: Build Release APK
+        working-directory: "Сайт с тренировкой/android"
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: "Сайт с тренировкой/android/app/build/outputs/apk/release/*.apk"
