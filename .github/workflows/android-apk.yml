@@ -47,6 +47,36 @@ jobs:
         working-directory: "Сайт с тренировкой"
         run: npx cap sync android
 
+      - name: Prepare release signing
+        working-directory: "Сайт с тренировкой/android"
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > asteri.keystore
+          cat > app/signing.gradle <<'EOF'
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file("asteri.keystore")
+                      storePassword System.getenv("KEYSTORE_PASSWORD")
+                      keyAlias System.getenv("KEY_ALIAS")
+                      keyPassword System.getenv("KEY_PASSWORD")
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
+          }
+          EOF
+          if ! grep -q 'signing.gradle' app/build.gradle; then
+            echo 'apply from: "signing.gradle"' >> app/build.gradle
+          fi
+
       - name: Build Release APK
         working-directory: "Сайт с тренировкой/android"
         run: ./gradlew assembleRelease
@@ -55,5 +85,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
-          path: "Сайт с тренировкой/android/app/build/outputs/apk/release/app-release.apk"
-
+          path: "Сайт с тренировкой/android/app/build/outputs/apk/release/*.apk"
