@@ -138,7 +138,7 @@
 
     button,input,select,textarea{font:inherit;color:inherit}
     button{cursor:pointer}
-    .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 110px}
+    .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 130px}
 
     .top{display:grid;gap:12px;margin-bottom:16px}
     .topbar{display:flex;align-items:center;gap:12px}
@@ -423,12 +423,13 @@
     .tabs{
       position:fixed;left:0;right:0;bottom:0;
       display:flex;justify-content:center;
-      padding:10px 12px calc(14px + env(safe-area-inset-bottom));
+      padding:14px 12px calc(14px + env(safe-area-inset-bottom));
       background:
         linear-gradient(180deg, var(--tabs-bg1), var(--tabs-bg2) 22%, var(--tabs-bg3));
       backdrop-filter:blur(12px);
       border-top:1px solid var(--stroke);
       z-index:50;
+      overflow:visible;
     }
     .tabbar{
       width:min(var(--max), calc(100% - 12px));
@@ -439,6 +440,8 @@
       border-radius:20px;
       background:linear-gradient(180deg, var(--card0), var(--card1));
       border:1px solid var(--stroke-strong);
+      position:relative;
+      z-index:1;
     }
     .tab{
       display:flex;align-items:center;justify-content:center;gap:10px;
@@ -449,6 +452,10 @@
       font-weight:800;
       letter-spacing:.2px;
       font-size:13px;
+      position:relative;
+      z-index:2;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
     }
     .tab:active{transform:translateY(1px)}
     .tab svg{width:18px;height:18px;fill:currentColor;opacity:.9}
@@ -457,6 +464,247 @@
       background:linear-gradient(180deg, #8f94ff, #6f78ff);
       color:#ffffff;
       box-shadow:0 0 0 4px rgba(111,120,255,.18);
+    }
+    .hero-fab{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:calc(74px + env(safe-area-inset-bottom));
+      width:48px;height:48px;
+      border-radius:14px;
+      border:1px solid var(--stroke-strong);
+      background:linear-gradient(180deg, #8f94ff, #6f78ff);
+      color:#fff;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+      box-shadow:0 16px 40px rgba(8,12,26,.45);
+      z-index:65;
+      pointer-events:auto;
+      touch-action:manipulation;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .hero-fab svg{width:20px;height:20px;fill:currentColor}
+    .hero-fab span{font-size:9px;font-weight:800;letter-spacing:.3px}
+    .hero-fab[aria-selected="true"]{
+      box-shadow:0 0 0 4px rgba(111,120,255,.25), 0 18px 44px rgba(8,12,26,.55);
+    }
+
+    .hero-card{
+      display:flex;align-items:center;gap:14px;
+      padding:12px;
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
+    }
+    .hero-stage{
+      display:grid;
+      grid-template-columns:90px 1fr 90px;
+      gap:10px;
+      align-items:center;
+      margin-top:8px;
+    }
+    .gear-col{display:grid;gap:10px}
+    .gear-slot{
+      height:64px;
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
+      display:grid;place-items:center;
+      color:var(--muted);
+      font-weight:800;
+      font-size:11px;
+      letter-spacing:.3px;
+    }
+    .hero-figure{
+      height:260px;
+      border-radius:26px;
+      border:1px solid var(--stroke);
+      background:
+        radial-gradient(140px 120px at 50% 20%, rgba(111,120,255,.18), transparent 70%),
+        linear-gradient(180deg, var(--card1), var(--card2));
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-figure::after{
+      content:"";
+      position:absolute;
+      bottom:-22px;left:50%;
+      transform:translateX(-50%);
+      width:160px;height:50px;
+      background:radial-gradient(closest-side, rgba(0,0,0,.45), transparent 70%);
+      filter:blur(2px);
+    }
+    .hero-silhouette{
+      width:140px;height:200px;
+      display:grid;place-items:center;
+      position:relative;
+    }
+    .hero-head{
+      width:64px;height:64px;border-radius:20px;
+      border:1px solid var(--stroke-strong);
+      background:linear-gradient(180deg, var(--card0), var(--card1));
+      display:grid;place-items:center;
+      position:absolute;top:10px;
+      overflow:hidden;
+    }
+    .hero-head img{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;display:none;
+    }
+    .hero-head.has-img img{display:block}
+    .hero-head.has-img .hero-letter{opacity:0}
+    .hero-body{
+      width:110px;height:140px;
+      position:absolute;bottom:6px;
+      display:flex;flex-direction:column;align-items:center;
+      gap:6px;
+    }
+    .hero-chest{
+      width:110px;height:70px;border-radius:22px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,.18), transparent 45%),
+        linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.14);
+      position:relative;
+    }
+    .hero-chest::after{
+      content:"";
+      position:absolute;left:50%;top:8px;
+      width:24px;height:24px;border-radius:8px;
+      transform:translateX(-50%);
+      border:1px solid rgba(255,255,255,.3);
+      background:rgba(255,255,255,.08);
+    }
+    .hero-legs{
+      width:84px;height:48px;border-radius:16px;
+      background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+      position:relative;
+    }
+    .hero-legs::before,.hero-legs::after{
+      content:"";
+      position:absolute;bottom:-6px;width:28px;height:24px;border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .hero-legs::before{left:-4px}
+    .hero-legs::after{right:-4px}
+    .hero-arm{
+      position:absolute;top:56px;width:28px;height:60px;border-radius:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .hero-arm.left{left:-26px}
+    .hero-arm.right{right:-26px}
+    .hero-xpbar{
+      display:flex;align-items:center;gap:8px;
+      margin-top:10px;
+    }
+    .lvl-chip{
+      padding:6px 10px;
+      border-radius:14px;
+      background:var(--accent-soft);
+      border:1px solid var(--accent-border);
+      color:var(--accent-text);
+      font-weight:800;
+      font-size:12px;
+    }
+    .xp-wide{
+      flex:1;
+      height:12px;border-radius:999px;overflow:hidden;
+      background:var(--accent-soft);border:1px solid var(--accent-border);
+    }
+    .xp-wide-fill{
+      height:100%;
+      background:linear-gradient(90deg, var(--purple), var(--pink));
+      width:0%;
+    }
+    .hero-avatar{
+      width:72px;height:72px;border-radius:24px;
+      display:grid;place-items:center;
+      border:1px solid var(--stroke-strong);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(111,120,255,.35), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(255,122,200,.25), transparent 55%),
+        var(--card0);
+      color:var(--ink);
+      font-weight:800;
+      font-family:var(--h);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-avatar img{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;display:none;
+    }
+    .hero-avatar.has-img img{display:block}
+    .hero-avatar.has-img .hero-letter{opacity:0}
+    .hero-letter{position:relative;z-index:1}
+    .hero-avatar-tools{margin-top:10px}
+    .hero-main{display:flex;flex-direction:column;gap:6px}
+    .hero-main strong{font-size:15px}
+    .hero-sub{color:var(--muted);font-size:12px}
+    .energy-bar{
+      height:10px;border-radius:999px;overflow:hidden;
+      background:var(--accent-soft);border:1px solid var(--accent-border);
+    }
+    .energy-fill{
+      height:100%;
+      background:linear-gradient(90deg, var(--mint), var(--sky));
+      width:0%;
+    }
+    .hero-stats{
+      margin-top:10px;
+      display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;
+    }
+    .stat-chip{
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
+      border-radius:16px;
+      padding:10px;
+      text-align:center;
+    }
+    .stat-chip span{display:block;color:var(--muted);font-size:11px}
+    .stat-chip strong{display:block;margin-top:4px;font-size:14px}
+    .inventory-list{display:grid;gap:8px;margin-top:10px}
+    .inventory-item{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
+      border-radius:16px;
+      padding:10px 12px;
+    }
+    .inventory-item .left{display:flex;align-items:center;gap:10px}
+    .inventory-badge{
+      width:32px;height:32px;border-radius:12px;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      border:1px solid var(--accent-border);
+      font-weight:800;
+      color:var(--accent-text);
+    }
+    .chest-card{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:12px;
+      border-radius:20px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
+    }
+    .chest-left{display:flex;align-items:center;gap:12px}
+    .chest-icon{
+      width:50px;height:50px;border-radius:16px;
+      display:grid;place-items:center;
+      background:var(--accent-soft);
+      border:1px solid var(--accent-border);
+      font-size:22px;
+    }
+    .loot-log{margin-top:10px;display:grid;gap:8px}
+    .loot-pill{
+      padding:8px 10px;border-radius:14px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
+      font-size:12px;color:var(--muted);
     }
     @media (max-width: 640px){
       .wrap{padding:16px 14px 122px}
@@ -555,6 +803,11 @@
         <button class="btn chip" id="theme-toggle">Тема: Светлая</button>
         <button class="btn ghost" id="settings-close">Закрыть</button>
       </div>
+      <div class="field" style="margin-top:12px">
+        <label for="x-proxy">X Proxy URL (необязательно)</label>
+        <input id="x-proxy" type="text" placeholder="https://<worker>.workers.dev/avatar" />
+      </div>
+      <p class="hint" style="margin-top:8px">Нужен, если хочешь подтягивать аватарки через X API безопасно. Иначе сайт использует прямые ссылки/загрузку файла.</p>
     </div>
   </div>
 
@@ -730,6 +983,117 @@
         </div>
       </section>
 
+      <section class="view" data-view="hero">
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Герой</h2>
+              <span class="pill">Профиль</span>
+            </div>
+            <div class="hero-card">
+              <div class="hero-avatar" id="hero-avatar">
+                <span class="hero-letter" id="hero-letter">A</span>
+                <img id="hero-avatar-img" alt="avatar" loading="lazy" referrerpolicy="no-referrer" />
+              </div>
+              <div class="hero-main">
+                <strong id="hero-name">Герой</strong>
+                <div class="hero-sub" id="hero-level">LVL 1</div>
+                <div class="energy-bar" aria-hidden="true"><div class="energy-fill" id="hero-energy-fill"></div></div>
+                <div class="hero-sub" id="hero-energy-text">Энергия 0/100</div>
+              </div>
+            </div>
+            <div class="hero-xpbar">
+              <div class="lvl-chip" id="hero-lvl-chip">LVL 1</div>
+              <div class="xp-wide" aria-hidden="true"><div class="xp-wide-fill" id="hero-xp-fill"></div></div>
+            </div>
+            <div class="hero-stage">
+              <div class="gear-col">
+                <div class="gear-slot">Оружие</div>
+                <div class="gear-slot">Кольцо</div>
+                <div class="gear-slot">Пояс</div>
+              </div>
+              <div class="hero-figure">
+                <div class="hero-silhouette" id="hero-silhouette">
+                  <div class="hero-head" id="hero-head">
+                    <span class="hero-letter" id="hero-head-letter">A</span>
+                    <img id="hero-head-img" alt="avatar" loading="lazy" referrerpolicy="no-referrer" />
+                  </div>
+                  <div class="hero-body">
+                    <div class="hero-arm left"></div>
+                    <div class="hero-arm right"></div>
+                    <div class="hero-chest"></div>
+                    <div class="hero-legs"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="gear-col">
+                <div class="gear-slot">Шлем</div>
+                <div class="gear-slot">Броня</div>
+                <div class="gear-slot">Сапоги</div>
+              </div>
+            </div>
+            <div class="hero-avatar-tools">
+              <div class="field">
+                <label for="hero-avatar-url">Аватар (ссылка или @ник)</label>
+                <input id="hero-avatar-url" type="text" placeholder="https://... или @username (X/Twitter)" />
+              </div>
+              <div class="btns" style="margin-top:0">
+                <input id="hero-avatar-file" type="file" accept="image/*" hidden />
+                <button class="btn ghost sm" type="button" id="hero-avatar-upload">Загрузить</button>
+                <button class="btn sm" type="button" id="hero-avatar-apply">Применить</button>
+                <button class="btn ghost sm" type="button" id="hero-avatar-clear">Убрать</button>
+              </div>
+              <p class="hint">Можно вставить @ник из X/Twitter, ссылку на профиль или прямую ссылку на картинку. Самый надёжный способ — загрузить файл.</p>
+            </div>
+            <div class="hero-stats">
+              <div class="stat-chip"><span>Монеты</span><strong id="hero-coins">0</strong></div>
+              <div class="stat-chip"><span>Кристаллы</span><strong id="hero-gems">0</strong></div>
+              <div class="stat-chip"><span>Серия</span><strong id="hero-streak">0</strong></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Инвентарь</h2>
+              <span class="pill">Снаряжение</span>
+            </div>
+            <div class="inventory-list" id="inv-list"></div>
+            <form class="form" id="inv-form" style="margin-top:8px">
+              <div class="field wide">
+                <label for="inv-name">Предмет</label>
+                <input id="inv-name" type="text" placeholder="Например: Зелье энергии" required />
+              </div>
+              <div class="field">
+                <label for="inv-qty">Кол-во</label>
+                <input id="inv-qty" type="number" min="1" max="999" value="1" required />
+              </div>
+              <div class="btns" style="margin-top:0">
+                <button class="btn mint" type="submit">Добавить</button>
+              </div>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Сундуки</h2>
+              <span class="pill">Лут</span>
+            </div>
+            <div class="chest-card">
+              <div class="chest-left">
+                <div class="chest-icon">🧰</div>
+                <div>
+                  <strong id="chest-count">0 сундуков</strong>
+                  <div class="hero-sub">Открывай, чтобы получать награды</div>
+                </div>
+              </div>
+              <div class="btns" style="margin-top:0">
+                <button class="btn mint sm" type="button" id="chest-open">Открыть</button>
+                <button class="btn ghost sm" type="button" id="chest-add">Найти</button>
+              </div>
+            </div>
+            <div class="loot-log" id="loot-log"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="view" data-view="quests">
         <div class="grid">
           <div class="panel">
@@ -798,6 +1162,10 @@
         Квесты
       </button>
     </div>
+  <button class="tab hero-fab" type="button" data-tab="hero" aria-selected="false" title="Герой" aria-label="Герой">
+      <svg viewBox="0 0 24 24"><path d="M12 2l4 7-4 2-4-2 4-7zm0 9l6 3-6 10-6-10 6-3z"/></svg>
+      <span>Герой</span>
+    </button>
   </div>
   <script>
     const STORE_KEY = "rpg_training_v1";
@@ -849,6 +1217,48 @@
         .replaceAll("\"", "&quot;");
     }
 
+    function extractXHandle(raw){
+      const value = String(raw || "").trim();
+      if(!value) return "";
+      const cleaned = value.replace(/\s+/g, "");
+      if(cleaned.startsWith("@")){
+        const handle = cleaned.slice(1).replace(/[^a-zA-Z0-9_]/g, "");
+        return handle || "";
+      }
+      try{
+        const url = new URL(cleaned);
+        const host = url.hostname.toLowerCase();
+        if(host.includes("twitter.com") || host.includes("x.com")){
+          const parts = url.pathname.split("/").filter(Boolean);
+          const handle = (parts[0] || "").replace(/^@/, "").replace(/[^a-zA-Z0-9_]/g, "");
+          return handle || "";
+        }
+      }catch{}
+      const handle = cleaned.replace(/^@/, "");
+      return /^[a-zA-Z0-9_]{1,30}$/.test(handle) ? handle : "";
+    }
+    function normalizeAvatarUrl(raw){
+      const value = String(raw || "").trim();
+      if(!value) return "";
+      const cleaned = value.replace(/\s+/g, "");
+      const handle = extractXHandle(cleaned);
+      if(handle) return `https://unavatar.io/x/${handle}`;
+      try{
+        const url = new URL(cleaned);
+        if(url.protocol === "http:") url.protocol = "https:";
+        return url.toString();
+      }catch{
+        return "";
+      }
+    }
+    function upscaleXAvatar(url){
+      const src = String(url || "");
+      if(!src) return "";
+      if(src.includes("_normal.")) return src.replace("_normal.", "_400x400.");
+      if(src.includes("_normal")) return src.replace("_normal", "_400x400");
+      return src;
+    }
+
     const seedWorkouts = () => ([
       { id: uid(), title: "Отжимания (3 подхода)", type: "strength", xp: 35, notes: "" },
       { id: uid(), title: "Приседания (3 подхода)", type: "strength", xp: 35, notes: "" },
@@ -873,6 +1283,12 @@
         notificationsEnabled: false,
         hideCompletedQuests: true,
         theme: "dark",
+        xProxyUrl: "",
+        hero: { coins: 120, gems: 6, energy: 78, energyMax: 100, chests: 1, lootLog: [], avatar: "" },
+        inventory: [
+          { id: uid(), name: "Зелье энергии", qty: 2 },
+          { id: uid(), name: "Талисман удачи", qty: 1 }
+        ],
         showQuestForm: false,
         showWorkoutForm: false,
         showReminderForm: false
@@ -896,6 +1312,12 @@
         merged.notificationsEnabled = Boolean(data.notificationsEnabled);
         merged.hideCompletedQuests = data.hideCompletedQuests !== false;
         merged.theme = data.theme === "light" || data.theme === "dark" ? data.theme : merged.theme;
+        merged.xProxyUrl = typeof data.xProxyUrl === "string" ? data.xProxyUrl : "";
+        merged.hero = data.hero && typeof data.hero === "object" ? { ...merged.hero, ...data.hero } : merged.hero;
+        merged.hero.chests = clampInt(merged.hero.chests || 0, 0, 9999);
+        merged.hero.lootLog = Array.isArray(merged.hero.lootLog) ? merged.hero.lootLog.slice(0, 6) : [];
+        merged.hero.avatar = typeof merged.hero.avatar === "string" ? merged.hero.avatar : "";
+        merged.inventory = Array.isArray(data.inventory) ? data.inventory : merged.inventory;
         merged.showQuestForm = Boolean(data.showQuestForm);
         merged.showWorkoutForm = Boolean(data.showWorkoutForm);
         merged.showReminderForm = Boolean(data.showReminderForm);
@@ -954,7 +1376,37 @@
     const elSettingsData = $("settings-data");
     const elThemeToggle = $("theme-toggle");
     const elOpenSettings = $("open-settings");
+    const elXProxy = $("x-proxy");
     const elQuestAuto = $("q-auto");
+    const elInvList = $("inv-list");
+    const elInvForm = $("inv-form");
+    const elInvName = $("inv-name");
+    const elInvQty = $("inv-qty");
+    const elHeroName = $("hero-name");
+    const elHeroLevel = $("hero-level");
+    const elHeroEnergyFill = $("hero-energy-fill");
+    const elHeroEnergyText = $("hero-energy-text");
+    const elHeroXpFill = $("hero-xp-fill");
+    const elHeroLvlChip = $("hero-lvl-chip");
+    const elHeroCoins = $("hero-coins");
+    const elHeroGems = $("hero-gems");
+    const elHeroStreak = $("hero-streak");
+    const elHeroAvatar = $("hero-avatar");
+    const elHeroLetter = $("hero-letter");
+    const elHeroAvatarImg = $("hero-avatar-img");
+    const elHeroSilhouette = $("hero-silhouette");
+    const elHeroHead = $("hero-head");
+    const elHeroHeadLetter = $("hero-head-letter");
+    const elHeroHeadImg = $("hero-head-img");
+    const elHeroAvatarUrl = $("hero-avatar-url");
+    const elHeroAvatarFile = $("hero-avatar-file");
+    const elHeroAvatarUpload = $("hero-avatar-upload");
+    const elHeroAvatarApply = $("hero-avatar-apply");
+    const elHeroAvatarClear = $("hero-avatar-clear");
+    const elChestCount = $("chest-count");
+    const elChestOpen = $("chest-open");
+    const elChestAdd = $("chest-add");
+    const elLootLog = $("loot-log");
 
     let toastTimer = null;
     applyTheme(S.theme);
@@ -967,6 +1419,7 @@
       elModalBg.classList.add("open");
     }
     function openSettings(){
+      if(elXProxy) elXProxy.value = (S.xProxyUrl || "").trim();
       elSettingsModal.classList.add("open");
     }
     function applyTheme(mode){
@@ -1088,6 +1541,8 @@
 
       if(nextLevel > prevLevel){
         openModal("Уровень повышен!", `Ты достиг уровня ${nextLevel}. Продолжай в том же духе.`);
+        addChest(1);
+        showToast(0, "Награда: сундук");
       }
     }
 
@@ -1255,10 +1710,100 @@
       renderHeader();
       renderHome();
       renderTraining();
+      renderHero();
       renderQuests();
       renderReminders();
       updateRemHint();
       updateCollapseUi();
+    }
+
+    function renderHero(){
+      if(!elHeroName) return;
+      const p = progressToNext(S.player.xp);
+      elHeroName.textContent = S.player.name || "Герой";
+      const letter = String(S.player.name || "A").trim().slice(0, 1).toUpperCase() || "A";
+      if(elHeroLetter) elHeroLetter.textContent = letter;
+      if(elHeroHeadLetter) elHeroHeadLetter.textContent = letter;
+      const avatar = (S.hero && S.hero.avatar) ? String(S.hero.avatar) : "";
+      if(elHeroAvatar){
+        if(avatar){
+          elHeroAvatar.classList.add("has-img");
+          if(elHeroAvatarImg) elHeroAvatarImg.src = avatar;
+        }else{
+          elHeroAvatar.classList.remove("has-img");
+          if(elHeroAvatarImg) elHeroAvatarImg.removeAttribute("src");
+        }
+      }
+      if(elHeroHead){
+        if(avatar){
+          elHeroHead.classList.add("has-img");
+          if(elHeroHeadImg) elHeroHeadImg.src = avatar;
+        }else{
+          elHeroHead.classList.remove("has-img");
+          if(elHeroHeadImg) elHeroHeadImg.removeAttribute("src");
+        }
+      }
+      if(elHeroAvatarImg){
+        elHeroAvatarImg.onerror = () => {
+          if(elHeroAvatar) elHeroAvatar.classList.remove("has-img");
+          elHeroAvatarImg.removeAttribute("src");
+          openModal("Аватар", "Не удалось загрузить изображение. Используй прямую https-ссылку или загрузку файла.");
+        };
+      }
+      if(elHeroHeadImg){
+        elHeroHeadImg.onerror = () => {
+          if(elHeroHead) elHeroHead.classList.remove("has-img");
+          elHeroHeadImg.removeAttribute("src");
+        };
+      }
+      elHeroLevel.textContent = `LVL ${p.level} · ${p.cur}/${p.need} XP`;
+      if(elHeroLvlChip) elHeroLvlChip.textContent = `LVL ${p.level}`;
+      if(elHeroXpFill) elHeroXpFill.style.width = `${Math.round(p.pct * 100)}%`;
+      const hero = S.hero || { coins: 0, gems: 0, energy: 0, energyMax: 100 };
+      const energyMax = clampInt(hero.energyMax || 100, 10, 999);
+      const energy = clampInt(hero.energy || 0, 0, energyMax);
+      const pct = energyMax ? Math.round((energy / energyMax) * 100) : 0;
+      if(elHeroEnergyFill) elHeroEnergyFill.style.width = `${pct}%`;
+      if(elHeroEnergyText) elHeroEnergyText.textContent = `Энергия ${energy}/${energyMax}`;
+      if(elHeroCoins) elHeroCoins.textContent = clampInt(hero.coins || 0, 0, 999999);
+      if(elHeroGems) elHeroGems.textContent = clampInt(hero.gems || 0, 0, 999999);
+      if(elHeroStreak) elHeroStreak.textContent = clampInt(S.player.streak || 0, 0, 99999);
+      if(elChestCount){
+        const c = clampInt(hero.chests || 0, 0, 9999);
+        elChestCount.textContent = `${c} сундуков`;
+      }
+      if(elLootLog){
+        const log = Array.isArray(hero.lootLog) ? hero.lootLog : [];
+        elLootLog.innerHTML = log.length
+          ? log.map(t => `<div class="loot-pill">${esc(t)}</div>`).join("")
+          : `<div class="loot-pill">Лута пока нет. Открой сундук.</div>`;
+      }
+
+      if(!elInvList) return;
+      if(!S.inventory || !S.inventory.length){
+        elInvList.innerHTML = `<div class="card"><div class="t"><strong>Инвентарь пуст</strong></div><div class="meta">Добавь предметы ниже.</div></div>`;
+        return;
+      }
+      elInvList.innerHTML = S.inventory.map(it => `
+        <div class="inventory-item">
+          <div class="left">
+            <div class="inventory-badge">${String(it.qty || 1)}</div>
+            <div>
+              <strong>${esc(it.name || "Предмет")}</strong>
+              <div class="meta">Рюкзак</div>
+            </div>
+          </div>
+          <button class="icon-btn sm" title="Удалить" aria-label="Удалить" data-inv-del="${it.id}">
+            <svg viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM7 9h2v9H7V9z"/></svg>
+          </button>
+        </div>
+      `).join("");
+      elInvList.querySelectorAll("[data-inv-del]").forEach(b => b.addEventListener("click", () => {
+        const id = b.getAttribute("data-inv-del");
+        S.inventory = S.inventory.filter(it => it.id !== id);
+        saveState();
+        renderHero();
+      }));
     }
 
     function updateCollapseUi(){
@@ -1377,8 +1922,85 @@
       return { xp, reason };
     }
 
+    function addLootLog(text){
+      if(!S.hero) S.hero = { coins: 0, gems: 0, energy: 0, energyMax: 100, chests: 0, lootLog: [] };
+      const log = Array.isArray(S.hero.lootLog) ? S.hero.lootLog : [];
+      log.unshift(text);
+      S.hero.lootLog = log.slice(0, 6);
+    }
+
+    function addChest(count){
+      if(!S.hero) S.hero = { coins: 0, gems: 0, energy: 0, energyMax: 100, chests: 0, lootLog: [] };
+      S.hero.chests = clampInt((S.hero.chests || 0) + count, 0, 9999);
+      addLootLog(`Сундук +${count}`);
+      saveState();
+      renderHero();
+    }
+
+    function addInventoryItem(name, qty){
+      const clean = String(name || "").trim();
+      if(!clean) return;
+      const q = clampInt(qty || 1, 1, 999);
+      const existing = S.inventory.find(it => String(it.name || "").toLowerCase() === clean.toLowerCase());
+      if(existing){
+        existing.qty = clampInt((existing.qty || 1) + q, 1, 9999);
+      }else{
+        S.inventory.unshift({ id: uid(), name: clean.slice(0, 60), qty: q });
+      }
+    }
+
+    function openChest(){
+      if(!S.hero) return;
+      if((S.hero.chests || 0) <= 0){
+        openModal("Сундук", "У тебя пока нет сундуков. Выполняй квесты и получай награды.");
+        return;
+      }
+      S.hero.chests -= 1;
+      const roll = Math.random() * 100;
+      if(roll < 55){
+        const items = [
+          { name: "Зелье энергии", min: 1, max: 2 },
+          { name: "Эликсир силы", min: 1, max: 1 },
+          { name: "Свёрток припасов", min: 1, max: 3 },
+          { name: "Оберег удачи", min: 1, max: 1 }
+        ];
+        const it = items[Math.floor(Math.random() * items.length)];
+        const qty = clampInt(it.min + Math.floor(Math.random() * (it.max - it.min + 1)), 1, 999);
+        addInventoryItem(it.name, qty);
+        addLootLog(`Предмет: ${it.name} x${qty}`);
+        showToast(0, `Лут: ${it.name} x${qty}`);
+      }else if(roll < 85){
+        const coins = clampInt(50 + Math.floor(Math.random() * 151), 10, 9999);
+        S.hero.coins = clampInt((S.hero.coins || 0) + coins, 0, 999999);
+        addLootLog(`Монеты +${coins}`);
+        showToast(0, `Монеты +${coins}`);
+      }else if(roll < 97){
+        const gems = clampInt(2 + Math.floor(Math.random() * 5), 1, 999);
+        S.hero.gems = clampInt((S.hero.gems || 0) + gems, 0, 99999);
+        addLootLog(`Кристаллы +${gems}`);
+        showToast(0, `Кристаллы +${gems}`);
+      }else{
+        const rare = ["Легендарный клинок", "Древний артефакт"];
+        const name = rare[Math.floor(Math.random() * rare.length)];
+        addInventoryItem(name, 1);
+        addLootLog(`Редкий предмет: ${name}`);
+        showToast(0, `Редкий лут: ${name}`);
+      }
+      saveState();
+      renderHero();
+    }
+
     // Tabs
-    document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
+    document.querySelectorAll(".tab").forEach(b => {
+      const tab = b.getAttribute("data-tab");
+      if(!tab) return;
+      const handler = (e) => {
+        if(e) e.preventDefault();
+        setTab(tab);
+      };
+      b.addEventListener("click", handler);
+      b.addEventListener("touchstart", handler, { passive: false });
+    });
     $("go-training").addEventListener("click", () => setTab("training"));
     $("go-quests").addEventListener("click", () => setTab("quests"));
 
@@ -1439,6 +2061,117 @@
       updateCollapseUi();
       showToast(0, "Квест создан");
     });
+
+    if (elInvForm) {
+      elInvForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = (elInvName?.value || "").trim();
+        if(!name) return;
+        const qty = clampInt(elInvQty?.value || 1, 1, 999);
+        const existing = S.inventory.find(it => String(it.name || "").toLowerCase() === name.toLowerCase());
+        if(existing){
+          existing.qty = clampInt((existing.qty || 1) + qty, 1, 9999);
+        }else{
+          S.inventory.unshift({ id: uid(), name: name.slice(0, 60), qty });
+        }
+        saveState();
+        if(elInvName) elInvName.value = "";
+        if(elInvQty) elInvQty.value = "1";
+        renderHero();
+        showToast(0, "Предмет добавлен");
+      });
+    }
+    if (elHeroAvatarUpload && elHeroAvatarFile) {
+      elHeroAvatarUpload.addEventListener("click", () => {
+        elHeroAvatarFile.click();
+      });
+    }
+    if (elHeroAvatarFile) {
+      elHeroAvatarFile.addEventListener("change", () => {
+        const file = elHeroAvatarFile.files && elHeroAvatarFile.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          if(!S.hero) S.hero = { coins: 0, gems: 0, energy: 0, energyMax: 100, chests: 0, lootLog: [] };
+          S.hero.avatar = String(reader.result || "");
+          if(elHeroAvatarUrl) elHeroAvatarUrl.value = "";
+          saveState();
+          renderHero();
+          showToast(0, "Аватар обновлён");
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    async function fetchAvatarFromX(handle){
+      const base = String(S.xProxyUrl || "").trim();
+      if(!base) return "";
+      try{
+        const url = new URL(base);
+        if(!url.searchParams.has("username")) url.searchParams.set("username", handle);
+        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+        if(!res.ok) return "";
+        const data = await res.json();
+        const avatar = data?.avatar || data?.data?.profile_image_url || "";
+        return upscaleXAvatar(avatar);
+      }catch{
+        return "";
+      }
+    }
+    async function applyAvatarFromInput(showErrors){
+      if(!elHeroAvatarUrl) return false;
+      const raw = elHeroAvatarUrl.value.trim();
+      const handle = extractXHandle(raw);
+      const wantProxy = handle && String(S.xProxyUrl || "").trim();
+      let resolved = "";
+      if(wantProxy) resolved = await fetchAvatarFromX(handle);
+      const normalized = resolved || normalizeAvatarUrl(raw);
+      if(!normalized){
+        if(showErrors) openModal("Аватар", "Вставь ссылку на картинку или @ник из X/Twitter.");
+        return false;
+      }
+      if(wantProxy && !resolved && showErrors){
+        showToast(0, "X Proxy не ответил, использую запасной аватар");
+      }
+      if(!S.hero) S.hero = { coins: 0, gems: 0, energy: 0, energyMax: 100, chests: 0, lootLog: [] };
+      S.hero.avatar = normalized;
+      elHeroAvatarUrl.value = normalized;
+      saveState();
+      renderHero();
+      showToast(0, "Аватар обновлён");
+      return true;
+    }
+    if (elHeroAvatarApply) {
+      elHeroAvatarApply.addEventListener("click", () => { void applyAvatarFromInput(true); });
+    }
+    if (elHeroAvatarUrl) {
+      elHeroAvatarUrl.addEventListener("change", () => { void applyAvatarFromInput(false); });
+      elHeroAvatarUrl.addEventListener("keydown", (e) => {
+        if(e.key === "Enter"){
+          e.preventDefault();
+          void applyAvatarFromInput(true);
+        }
+      });
+    }
+    if (elHeroAvatarClear) {
+      elHeroAvatarClear.addEventListener("click", () => {
+        if(S.hero) S.hero.avatar = "";
+        if(elHeroAvatarUrl) elHeroAvatarUrl.value = "";
+        saveState();
+        renderHero();
+        showToast(0, "Аватар убран");
+      });
+    }
+    if (elChestOpen) {
+      elChestOpen.addEventListener("click", () => {
+        openChest();
+      });
+    }
+    if (elChestAdd) {
+      elChestAdd.addEventListener("click", () => {
+        addChest(1);
+        showToast(0, "Ты нашёл сундук");
+      });
+    }
 
     if (elQuestAuto) {
       elQuestAuto.addEventListener("click", () => {
@@ -1572,6 +2305,13 @@
         applyTheme(S.theme);
       });
     }
+    if (elXProxy) {
+      elXProxy.addEventListener("change", () => {
+        S.xProxyUrl = (elXProxy.value || "").trim();
+        saveState();
+        showToast(0, "X Proxy сохранён");
+      });
+    }
     elModalMore.addEventListener("click", () => {
       const open = elIO.style.display !== "none";
       elIO.style.display = open ? "none" : "block";
@@ -1601,7 +2341,7 @@
     // Boot
     renderAll();
     const hash = (location.hash || "").replace("#", "");
-    if(hash === "training" || hash === "quests" || hash === "home") setTab(hash);
+    if(hash === "training" || hash === "quests" || hash === "home" || hash === "hero") setTab(hash);
     function updateBottomHide(){
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
       document.body.classList.toggle("hide-on-bottom", nearBottom);
