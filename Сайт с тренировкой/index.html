@@ -201,6 +201,7 @@
     .card .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .card .t strong{font-size:13px}
     .meta{color:var(--muted);font-size:12px;margin-top:4px}
+    .meta.ai{opacity:.9}
 
     .rem-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .rem-left{display:flex;align-items:center;gap:12px;min-width:0}
@@ -451,6 +452,20 @@
           <button class="btn danger" id="io-reset">Сброс</button>
         </div>
         <p class="hint" style="margin-top:10px">Импорт перезапишет текущий прогресс. Сброс удалит всё из localStorage.</p>
+        <div class="btns" style="margin-top:8px">
+          <button class="btn chip" id="io-ai-toggle">AI импорт</button>
+        </div>
+        <div id="ai-io" style="display:none;margin-top:10px">
+          <div class="field">
+            <label for="ai-text">AI JSON (оценки)</label>
+            <textarea class="mono" id="ai-text" spellcheck="false" placeholder='{"items":[{"id":"q1","title":"...","xp":40,"reason":"..."}]}'></textarea>
+          </div>
+          <div class="btns">
+            <button class="btn mint" id="ai-apply">Применить AI</button>
+            <button class="btn ghost" id="ai-clear">Очистить</button>
+          </div>
+          <p class="hint" style="margin-top:8px">Вставь JSON с оценками от AI. Совпадение идёт по id, затем по названию.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -466,9 +481,14 @@
         <button class="btn ghost" id="settings-close">Закрыть</button>
       </div>
       <div class="field" style="margin-top:12px">
-        <label for="ai-key">OpenAI API ключ (для оценки XP)</label>
-        <input id="ai-key" type="password" placeholder="sk-..." autocomplete="off" />
+        <label for="ai-key">Claude API ключ (для оценки XP)</label>
+        <input id="ai-key" type="password" placeholder="sk-ant-..." autocomplete="off" />
         <p class="hint">Ключ хранится локально в приложении. Не делись им с другими.</p>
+      </div>
+      <div class="field" style="margin-top:8px">
+        <label for="ai-model">Claude модель</label>
+        <input id="ai-model" type="text" placeholder="claude-3-5-sonnet-latest" autocomplete="off" />
+        <p class="hint">Если модель недоступна, замени на ту, что разрешена в твоём аккаунте.</p>
       </div>
     </div>
   </div>
@@ -787,6 +807,7 @@
         nextReminderId: 1,
         notificationsEnabled: false,
         aiKey: "",
+        aiModel: "claude-3-5-sonnet-latest",
         hideCompletedQuests: true,
         showQuestForm: false,
         showWorkoutForm: false,
@@ -810,6 +831,7 @@
         merged.nextReminderId = clampInt(data.nextReminderId || merged.nextReminderId, 1, 999999);
         merged.notificationsEnabled = Boolean(data.notificationsEnabled);
         merged.aiKey = typeof data.aiKey === "string" ? data.aiKey : "";
+        merged.aiModel = typeof data.aiModel === "string" && data.aiModel.trim() ? data.aiModel.trim() : merged.aiModel;
         merged.hideCompletedQuests = data.hideCompletedQuests !== false;
         merged.showQuestForm = Boolean(data.showQuestForm);
         merged.showWorkoutForm = Boolean(data.showWorkoutForm);
@@ -863,12 +885,18 @@
     const elModalMore = $("modal-more");
     const elIO = $("io");
     const elIOText = $("io-text");
+    const elAiIO = $("ai-io");
+    const elAiIOToggle = $("io-ai-toggle");
+    const elAiText = $("ai-text");
+    const elAiApply = $("ai-apply");
+    const elAiClear = $("ai-clear");
     const elSettingsModal = $("settingsModal");
     const elSettingsClose = $("settings-close");
     const elSettingsNotify = $("settings-notify");
     const elSettingsData = $("settings-data");
     const elOpenSettings = $("open-settings");
     const elAiKey = $("ai-key");
+    const elAiModel = $("ai-model");
     const elQuestAi = $("q-ai");
     const elSettingsTestKey = $("settings-test-key");
 
@@ -884,6 +912,7 @@
     function openSettings(){
       elSettingsModal.classList.add("open");
       if (elAiKey) elAiKey.value = S.aiKey || "";
+      if (elAiModel) elAiModel.value = S.aiModel || "claude-3-5-sonnet-latest";
     }
     function closeSettings(){
       elSettingsModal.classList.remove("open");
@@ -893,6 +922,7 @@
       elIO.style.display = "block";
       elModalMore.textContent = "Скрыть";
       elIOText.value = JSON.stringify(S, null, 2);
+      if (elAiIO) elAiIO.style.display = "none";
     }
     function closeModal(){
       elModalBg.classList.remove("open");
@@ -1120,10 +1150,12 @@
         const badge = q.repeat === "daily"
           ? `<span class="badge" style="border-color:rgba(245,195,75,.24)"><span class="dot"></span>Ежедневно</span>`
           : `<span class="badge" style="border-color:rgba(255,255,255,.14)"><span class="dot" style="background:rgba(238,240,255,.75);box-shadow:0 0 0 6px rgba(238,240,255,.10)"></span>Один раз</span>`;
+        const aiNote = q.aiReason ? `<div class="meta ai">AI: ${esc(q.aiReason)}</div>` : "";
         return `
           <div class="card" style="${doneNow ? "opacity:.72" : ""}">
             <div class="t"><strong>${esc(q.title)}</strong>${badge}</div>
             <div class="meta">${q.notes ? esc(q.notes) + " · " : ""}<strong>${q.xp} XP</strong>${doneNow ? " · Выполнено" : ""}</div>
+            ${aiNote}
             <div class="btns">
               <button class="btn primary" ${doneNow ? "disabled" : ""} data-quest="${q.id}">${doneNow ? "Готово" : "Завершить"}</button>
               <button class="btn ghost" data-quest-del="${q.id}">Удалить</button>
@@ -1229,24 +1261,20 @@
     }
 
     // AI helpers
-    function getResponseText(data){
-      if(!data) return "";
-      if(typeof data.output_text === "string" && data.output_text) return data.output_text;
-      const output = Array.isArray(data.output) ? data.output : [];
-      for (const item of output){
-        if(item && item.type === "message" && Array.isArray(item.content)){
-          const part = item.content.find(p => p && p.type === "output_text" && typeof p.text === "string");
-          if(part) return part.text;
-        }
-      }
-      return "";
+    function getClaudeText(data){
+      const parts = Array.isArray(data?.content) ? data.content : [];
+      return parts.filter(p => p && p.type === "text" && typeof p.text === "string")
+        .map(p => p.text)
+        .join("")
+        .trim();
     }
 
-    async function postOpenAI(body){
-      const url = "https://api.openai.com/v1/responses";
+    async function postClaude(body){
+      const url = "https://api.anthropic.com/v1/messages";
       const headers = {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${S.aiKey}`
+        "content-type": "application/json",
+        "x-api-key": S.aiKey,
+        "anthropic-version": "2023-06-01"
       };
       const capHttp = window.CapacitorHttp || (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorHttp);
       if(isNative() && capHttp && typeof capHttp.request === "function"){
@@ -1277,35 +1305,24 @@
 Заметка: ${notes || "нет"}
 Сложность оцени по времени, усилию и дисциплине.
       `.trim();
+      const model = (S.aiModel || "claude-3-5-sonnet-latest").trim();
       const body = {
-        model: "gpt-4o-mini",
-        input: prompt,
-        text: {
-          format: {
-            type: "json_schema",
-            name: "xp_score",
-            strict: true,
-            schema: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                xp: { type: "integer", minimum: 10, maximum: 150 },
-                reason: { type: "string" }
-              },
-              required: ["xp", "reason"]
-            }
-          }
-        }
+        model,
+        max_tokens: 120,
+        temperature: 0.2,
+        messages: [
+          { role: "user", content: prompt }
+        ]
       };
 
-      const { ok, status, data, raw } = await postOpenAI(body);
+      const { ok, status, data, raw } = await postClaude(body);
       if(!ok){
         const msg = data && data.error && data.error.message ? data.error.message : (raw || "").slice(0, 200);
         const code = data && data.error && data.error.code ? data.error.code : "";
         throw new Error(`HTTP_${status} ${code} ${msg}`.trim());
       }
 
-      const text = getResponseText(data);
+      const text = getClaudeText(data);
       if(!text) throw new Error("NO_OUTPUT");
       let parsed = null;
       try{ parsed = JSON.parse(text); }catch{}
@@ -1320,14 +1337,62 @@
       return { xp, reason: String(parsed.reason || "").slice(0, 120) };
     }
 
+    function normalizeAiItems(data){
+      if(Array.isArray(data)) return data;
+      if(data && Array.isArray(data.items)) return data.items;
+      return [];
+    }
+
+    function applyAiImport(text){
+      let data = null;
+      try{ data = JSON.parse(text); }catch{}
+      const items = normalizeAiItems(data);
+      if(!items.length){
+        openModal("AI импорт", "Не нашёл список items. Вставь JSON как в примере.");
+        return;
+      }
+      let matched = 0;
+      const byId = new Map(S.quests.map(q => [String(q.id), q]));
+      for (const it of items){
+        if(!it) continue;
+        const id = it.id != null ? String(it.id) : "";
+        const title = String(it.title || "").trim();
+        let q = null;
+        if(id && byId.has(id)) q = byId.get(id);
+        if(!q && title){
+          const low = title.toLowerCase();
+          q = S.quests.find(x => String(x.title || "").toLowerCase() === low);
+        }
+        if(!q) continue;
+        matched += 1;
+        const xp = clampInt(it.xp, 5, 500);
+        if(Number.isFinite(xp)) q.xp = xp;
+        const reason = String(it.reason || "").trim().slice(0, 140);
+        if(reason) q.aiReason = reason;
+      }
+      if(!matched){
+        openModal("AI импорт", "Совпадений не найдено. Проверь id или названия квестов.");
+        return;
+      }
+      saveState();
+      renderHome();
+      renderQuests();
+      showToast(0, `AI обновил ${matched} квестов`);
+    }
+
     async function testAiKey(){
       if(elAiKey){
         S.aiKey = elAiKey.value.trim();
         saveState();
       }
+      if(elAiModel){
+        const v = elAiModel.value.trim();
+        S.aiModel = v || S.aiModel || "claude-3-5-sonnet-latest";
+        saveState();
+      }
       if(!S.aiKey){
         openSettings();
-        openModal("AI ключ", "Вставь ключ и попробуй снова.");
+        openModal("AI ключ", "Вставь Claude ключ и попробуй снова.");
         return;
       }
       const prev = elSettingsTestKey ? elSettingsTestKey.textContent : "";
@@ -1341,10 +1406,14 @@
       }catch(e){
         const msg = String(e.message || "Ошибка");
         let hint = msg;
-        if(msg.includes("401")){
+        if(msg.includes("401") || msg.includes("403")){
           hint = "Похоже, ключ неверный или не активирован.";
-        }else if(msg.includes("model")){
-          hint = "Модель недоступна для этого ключа. Попробуем другую при необходимости.";
+        }else if(msg.includes("insufficient_quota") || msg.includes("429")){
+          hint = "Квота закончилась или нет биллинга на аккаунте.";
+        }else if(msg.includes("Failed to fetch")){
+          hint = "Запрос из браузера может блокироваться. Проверь в APK.";
+        }else if(msg.toLowerCase().includes("model")){
+          hint = "Модель недоступна для этого ключа. Попробуй другую в настройках.";
         }
         openModal("AI ключ", `Не удалось проверить ключ. ${hint}`);
       }finally{
@@ -1435,7 +1504,7 @@
           showToast(0, note);
         }catch(e){
           if(String(e.message) === "NO_KEY"){
-            openModal("AI XP", "Добавь OpenAI ключ в настройках (шестерёнка).");
+            openModal("AI XP", "Добавь Claude ключ в настройках (шестерёнка).");
           }else{
             openModal("AI XP", "Не удалось получить оценку. Проверь ключ и интернет.");
           }
@@ -1567,6 +1636,31 @@
       };
       elAiKey.addEventListener("input", syncAiKey);
       elAiKey.addEventListener("change", syncAiKey);
+    }
+    if (elAiModel) {
+      const syncAiModel = () => {
+        const v = elAiModel.value.trim();
+        S.aiModel = v || S.aiModel || "claude-3-5-sonnet-latest";
+        saveState();
+      };
+      elAiModel.addEventListener("input", syncAiModel);
+      elAiModel.addEventListener("change", syncAiModel);
+    }
+    if (elAiIOToggle && elAiIO) {
+      elAiIOToggle.addEventListener("click", () => {
+        const open = elAiIO.style.display !== "none";
+        elAiIO.style.display = open ? "none" : "block";
+      });
+    }
+    if (elAiApply && elAiText) {
+      elAiApply.addEventListener("click", () => {
+        applyAiImport(elAiText.value || "");
+      });
+    }
+    if (elAiClear && elAiText) {
+      elAiClear.addEventListener("click", () => {
+        elAiText.value = "";
+      });
     }
     elModalMore.addEventListener("click", () => {
       const open = elIO.style.display !== "none";
