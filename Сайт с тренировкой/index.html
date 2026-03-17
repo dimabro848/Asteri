@@ -462,6 +462,7 @@
       <div class="btns">
         <button class="btn mint" id="settings-notify">Уведомления</button>
         <button class="btn" id="settings-data">Данные</button>
+        <button class="btn chip" id="settings-test-key">Проверить ключ</button>
         <button class="btn ghost" id="settings-close">Закрыть</button>
       </div>
       <div class="field" style="margin-top:12px">
@@ -869,6 +870,7 @@
     const elOpenSettings = $("open-settings");
     const elAiKey = $("ai-key");
     const elQuestAi = $("q-ai");
+    const elSettingsTestKey = $("settings-test-key");
 
     let toastTimer = null;
 
@@ -1425,6 +1427,11 @@
         openDataModal();
       });
     }
+    if (elSettingsTestKey) {
+      elSettingsTestKey.addEventListener("click", () => {
+        testAiKey();
+      });
+    }
     if (elAiKey) {
       elAiKey.addEventListener("change", () => {
         S.aiKey = elAiKey.value.trim();
@@ -1498,13 +1505,27 @@
         })
       });
 
+      const raw = await res.text();
+      let data = null;
+      try{ data = JSON.parse(raw); }catch{}
       if(!res.ok){
-        throw new Error("HTTP_" + res.status);
+        const msg = data && data.error && data.error.message ? data.error.message : raw.slice(0, 200);
+        const code = data && data.error && data.error.code ? data.error.code : "";
+        throw new Error(`HTTP_${res.status} ${code} ${msg}`.trim());
       }
-      const data = await res.json();
       const text = data.output_text || "";
       const jsonText = text.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(jsonText);
       const xp = clampInt(parsed.xp, 10, 150);
       return { xp, reason: String(parsed.reason || "").slice(0, 120) };
+    }
+
+    async function testAiKey(){
+      try{
+        await estimateXpAI("Проверка ключа", "Короткий тест");
+        showToast(0, "Ключ работает");
+      }catch(e){
+        const msg = String(e.message || "Ошибка");
+        openModal("AI ключ", `Не удалось проверить ключ. ${msg}`);
+      }
     }
