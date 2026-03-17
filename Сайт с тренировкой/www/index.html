@@ -181,6 +181,13 @@
       letter-spacing:.3px;
       text-transform:uppercase;
     }
+    .panel-tools{display:flex;align-items:center;gap:8px}
+    .toggle-pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      background:#f6f3ff;border:1px solid rgba(126,107,255,.20);
+      font-size:12px;font-weight:700;color:#554cff;cursor:pointer;user-select:none;
+    }
 
     .cards{display:grid;gap:10px;margin-top:10px}
     .card{
@@ -258,6 +265,46 @@
       color:#554cff;
       font-weight:700;
     }
+    .collapse-btn{
+      border:0;
+      background:#f6f3ff;
+      border-radius:12px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:700;
+      color:#5d4fff;
+    }
+    .collapse{margin-top:10px;display:none}
+    .collapse.open{display:block}
+
+    .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .action-card{
+      border:1px solid rgba(31,29,43,.08);
+      border-radius:16px;
+      padding:12px;
+      background:linear-gradient(180deg, #ffffff, #f6f3ff);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .action-card h3{
+      margin:0;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .action-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
+    .action-row{display:flex;gap:8px;flex-wrap:wrap}
+    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .mini-card{
+      border:1px solid rgba(31,29,43,.08);
+      background:#f8f6ff;
+      border-radius:14px;
+      padding:10px;
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .mini-card strong{font-size:12px}
+    .mini-card span{font-size:11px;color:var(--muted)}
     .icon-btn{
       width:44px;height:44px;
       border-radius:14px;
@@ -417,6 +464,11 @@
         <button class="btn" id="settings-data">Данные</button>
         <button class="btn ghost" id="settings-close">Закрыть</button>
       </div>
+      <div class="field" style="margin-top:12px">
+        <label for="ai-key">OpenAI API ключ (для оценки XP)</label>
+        <input id="ai-key" type="password" placeholder="sk-..." autocomplete="off" />
+        <p class="hint">Ключ хранится локально в приложении. Не делись им с другими.</p>
+      </div>
     </div>
   </div>
 
@@ -514,9 +566,11 @@
             <p class="hint" id="rem-hint">Уведомления работают в APK. В браузере напоминания не приходят.</p>
             <div class="btns">
               <button class="btn ghost sm" id="rem-perm">Разрешить уведомления</button>
+              <button class="collapse-btn" id="rem-toggle">Добавить</button>
             </div>
             <div class="cards" id="rem-list"></div>
-            <form class="form" id="rem-form" style="margin-top:8px">
+            <div class="collapse" id="rem-collapse">
+              <form class="form" id="rem-form" style="margin-top:8px">
               <div class="field wide">
                 <label for="rem-title">Название</label>
                 <input id="rem-title" type="text" placeholder="Например: Вода" />
@@ -534,7 +588,8 @@
               <div class="btns" style="margin-top:0">
                 <button class="btn primary" type="submit">Добавить</button>
               </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -542,14 +597,23 @@
       <section class="view" data-view="training">
         <div class="grid">
           <div class="panel">
-            <h2>Тренировки</h2>
+            <div class="panel-head">
+              <h2>Тренировки</h2>
+              <div class="panel-tools">
+                <button class="collapse-btn" id="w-toggle">Добавить</button>
+              </div>
+            </div>
             <p class="hint">Нажми “Завершить” и получи XP. Можно добавлять свои тренировки.</p>
             <div class="cards" id="workout-list"></div>
           </div>
           <div class="panel">
-            <h2>Добавить тренировку</h2>
+            <div class="panel-head">
+              <h2>Новая тренировка</h2>
+              <span class="pill">Шаблон</span>
+            </div>
             <p class="hint">Сделай шаблон: название + XP за выполнение.</p>
-            <form class="form" id="workout-form">
+            <div class="collapse" id="w-collapse">
+              <form class="form" id="workout-form">
               <div class="field wide">
                 <label for="w-title">Название</label>
                 <input id="w-title" type="text" placeholder="Например: Отжимания 3x10" required />
@@ -574,7 +638,8 @@
                 <button class="btn mint" type="submit">Добавить</button>
                 <button class="btn ghost" type="button" id="w-seed">Добавить базовые</button>
               </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -582,14 +647,24 @@
       <section class="view" data-view="quests">
         <div class="grid">
           <div class="panel">
-            <h2>Доска квестов</h2>
+            <div class="panel-head">
+              <h2>Доска квестов</h2>
+              <div class="panel-tools">
+                <button class="toggle-pill" id="q-hide-toggle">Скрывать выполненные</button>
+                <button class="collapse-btn" id="q-toggle">Создать</button>
+              </div>
+            </div>
             <p class="hint">Создавай квесты, выполняй, получай XP. Можно сделать ежедневные.</p>
             <div class="cards" id="quest-list"></div>
           </div>
           <div class="panel">
-            <h2>Создать квест</h2>
+            <div class="panel-head">
+              <h2>Новый квест</h2>
+              <span class="pill">XP</span>
+            </div>
             <p class="hint">Если не знаешь XP: лёгкий 20, средний 40, сложный 70.</p>
-            <form class="form" id="quest-form">
+            <div class="collapse" id="q-collapse">
+              <form class="form" id="quest-form">
               <div class="field wide">
                 <label for="q-title">Название</label>
                 <input id="q-title" type="text" placeholder="Например: Сделать растяжку 10 минут" required />
@@ -611,9 +686,11 @@
               </div>
               <div class="btns" style="margin-top:0">
                 <button class="btn primary" type="submit">Создать</button>
+                <button class="btn chip" type="button" id="q-ai">AI XP</button>
                 <button class="btn ghost" type="button" id="q-seed">Добавить примеры</button>
               </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </section>
@@ -707,7 +784,12 @@
         log: [],
         reminders: [],
         nextReminderId: 1,
-        notificationsEnabled: false
+        notificationsEnabled: false,
+        aiKey: "",
+        hideCompletedQuests: true,
+        showQuestForm: false,
+        showWorkoutForm: false,
+        showReminderForm: false
       };
     }
     function loadState(){
@@ -726,6 +808,11 @@
         merged.reminders = Array.isArray(data.reminders) ? data.reminders : merged.reminders;
         merged.nextReminderId = clampInt(data.nextReminderId || merged.nextReminderId, 1, 999999);
         merged.notificationsEnabled = Boolean(data.notificationsEnabled);
+        merged.aiKey = typeof data.aiKey === "string" ? data.aiKey : "";
+        merged.hideCompletedQuests = data.hideCompletedQuests !== false;
+        merged.showQuestForm = Boolean(data.showQuestForm);
+        merged.showWorkoutForm = Boolean(data.showWorkoutForm);
+        merged.showReminderForm = Boolean(data.showReminderForm);
 
         merged.player.xp = clampInt(merged.player.xp, 0, 99999999);
         merged.player.streak = clampInt(merged.player.streak, 0, 99999);
@@ -758,6 +845,13 @@
     const elRemTime = $("rem-time");
     const elRemPerm = $("rem-perm");
     const elRemHint = $("rem-hint");
+    const elRemToggle = $("rem-toggle");
+    const elRemCollapse = $("rem-collapse");
+    const elQuestToggle = $("q-toggle");
+    const elQuestCollapse = $("q-collapse");
+    const elQuestHideToggle = $("q-hide-toggle");
+    const elWorkoutToggle = $("w-toggle");
+    const elWorkoutCollapse = $("w-collapse");
     const elToast = $("toast");
     const elToastXp = $("toast-xp");
     const elToastTxt = $("toast-txt");
@@ -773,6 +867,8 @@
     const elSettingsNotify = $("settings-notify");
     const elSettingsData = $("settings-data");
     const elOpenSettings = $("open-settings");
+    const elAiKey = $("ai-key");
+    const elQuestAi = $("q-ai");
 
     let toastTimer = null;
 
@@ -785,6 +881,7 @@
     }
     function openSettings(){
       elSettingsModal.classList.add("open");
+      if (elAiKey) elAiKey.value = S.aiKey || "";
     }
     function closeSettings(){
       elSettingsModal.classList.remove("open");
@@ -908,6 +1005,9 @@
       if(!q || isQuestDone(q)) return;
       if(q.repeat === "daily") q.doneOn = todayISO();
       else q.doneAt = Date.now();
+      if(q.repeat === "none"){
+        S.quests = S.quests.filter(x => x.id !== id);
+      }
       saveState();
       gainXp(q.xp, `Квест: ${q.title}`);
       renderQuests();
@@ -1009,7 +1109,10 @@
     }
 
     function renderQuests(){
-      const list = [...S.quests.filter(q => !isQuestDone(q)), ...S.quests.filter(isQuestDone)];
+      const base = S.hideCompletedQuests
+        ? S.quests.filter(q => !isQuestDone(q))
+        : [...S.quests.filter(q => !isQuestDone(q)), ...S.quests.filter(isQuestDone)];
+      const list = base;
       elQuestList.innerHTML = list.length ? list.map(q => {
         const doneNow = isQuestDone(q);
         const badge = q.repeat === "daily"
@@ -1048,6 +1151,16 @@
       renderQuests();
       renderReminders();
       updateRemHint();
+      updateCollapseUi();
+    }
+
+    function updateCollapseUi(){
+      if(elQuestCollapse) elQuestCollapse.classList.toggle("open", S.showQuestForm);
+      if(elWorkoutCollapse) elWorkoutCollapse.classList.toggle("open", S.showWorkoutForm);
+      if(elRemCollapse) elRemCollapse.classList.toggle("open", S.showReminderForm);
+      if(elQuestHideToggle){
+        elQuestHideToggle.textContent = S.hideCompletedQuests ? "Скрывать выполненные" : "Показывать выполненные";
+      }
     }
 
     function renderReminders(){
@@ -1145,8 +1258,10 @@
       saveState();
       $("w-title").value = "";
       $("w-notes").value = "";
+      S.showWorkoutForm = false;
       renderHome();
       renderTraining();
+      updateCollapseUi();
       showToast(0, "Тренировка добавлена");
     });
     $("quest-form").addEventListener("submit", (e) => {
@@ -1167,10 +1282,39 @@
       saveState();
       $("q-title").value = "";
       $("q-notes").value = "";
+      S.showQuestForm = false;
       renderHome();
       renderQuests();
+      updateCollapseUi();
       showToast(0, "Квест создан");
     });
+
+    if (elQuestAi) {
+      elQuestAi.addEventListener("click", async () => {
+        const title = $("q-title").value.trim();
+        const notes = ($("q-notes").value || "").trim();
+        if(!title){
+          openModal("AI XP", "Сначала введи название квеста.");
+          return;
+        }
+        elQuestAi.disabled = true;
+        elQuestAi.textContent = "Оцениваю...";
+        try{
+          const res = await estimateXpAI(title, notes);
+          $("q-xp").value = res.xp;
+          showToast(0, `AI XP: ${res.xp}`);
+        }catch(e){
+          if(String(e.message) === "NO_KEY"){
+            openModal("AI XP", "Добавь OpenAI ключ в настройках (шестерёнка).");
+          }else{
+            openModal("AI XP", "Не удалось получить оценку. Проверь ключ и интернет.");
+          }
+        }finally{
+          elQuestAi.disabled = false;
+          elQuestAi.textContent = "AI XP";
+        }
+      });
+    }
 
     elRemForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1186,7 +1330,9 @@
       S.reminders.push(item);
       saveState();
       elRemTitle.value = "";
+      S.showReminderForm = false;
       renderReminders();
+      updateCollapseUi();
       await syncReminders();
       showToast(0, "Напоминание добавлено");
     });
@@ -1223,6 +1369,37 @@
       }
     });
 
+    if (elQuestToggle) {
+      elQuestToggle.addEventListener("click", () => {
+        S.showQuestForm = !S.showQuestForm;
+        saveState();
+        updateCollapseUi();
+      });
+    }
+    if (elWorkoutToggle) {
+      elWorkoutToggle.addEventListener("click", () => {
+        S.showWorkoutForm = !S.showWorkoutForm;
+        saveState();
+        updateCollapseUi();
+      });
+    }
+    if (elRemToggle) {
+      elRemToggle.addEventListener("click", () => {
+        S.showReminderForm = !S.showReminderForm;
+        saveState();
+        updateCollapseUi();
+      });
+    }
+    if (elQuestHideToggle) {
+      elQuestHideToggle.addEventListener("click", () => {
+        S.hideCompletedQuests = !S.hideCompletedQuests;
+        saveState();
+        renderQuests();
+        renderHome();
+        updateCollapseUi();
+      });
+    }
+
     if (elSettingsNotify) {
       elSettingsNotify.addEventListener("click", async () => {
         closeSettings();
@@ -1246,6 +1423,12 @@
       elSettingsData.addEventListener("click", () => {
         closeSettings();
         openDataModal();
+      });
+    }
+    if (elAiKey) {
+      elAiKey.addEventListener("change", () => {
+        S.aiKey = elAiKey.value.trim();
+        saveState();
       });
     }
     elModalMore.addEventListener("click", () => {
@@ -1290,3 +1473,38 @@
   </script>
 </body>
 </html>
+    async function estimateXpAI(title, notes){
+      if(!S.aiKey){
+        openSettings();
+        throw new Error("NO_KEY");
+      }
+      const prompt = `
+Ты ассистент, оценивающий XP за квесты в RPG-трекере.
+Дай только JSON: {"xp": число от 10 до 150, "reason": кратко}
+Квест: ${title}
+Заметка: ${notes || "нет"}
+Сложность оцени по времени, усилию и дисциплине.
+      `.trim();
+
+      const res = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${S.aiKey}`
+        },
+        body: JSON.stringify({
+          model: "gpt-5-mini",
+          input: prompt
+        })
+      });
+
+      if(!res.ok){
+        throw new Error("HTTP_" + res.status);
+      }
+      const data = await res.json();
+      const text = data.output_text || "";
+      const jsonText = text.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(jsonText);
+      const xp = clampInt(parsed.xp, 10, 150);
+      return { xp, reason: String(parsed.reason || "").slice(0, 120) };
+    }
