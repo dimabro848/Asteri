@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f1ecff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <title>Asteri</title>
+  <meta name="description" content="Asteri: RPG-тренировки с уровнем, XP и квестами." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg0:#f6f1ff;
+      --bg1:#e9e3ff;
+      --ink:#1f1d2b;
+      --muted:#6b6b8b;
+      --stroke:rgba(31,29,43,.08);
+      --shadow:0 18px 46px rgba(88,72,155,.18);
+
+      --purple:#7e6bff;
+      --purple2:#9a7bff;
+      --pink:#ff74a4;
+      --mint:#5ad1c3;
+      --gold:#ffc46b;
+      --sky:#6ab6ff;
+
+      --r:20px;
+      --r2:28px;
+      --max:1100px;
+
+      --h:"Poppins", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      --b:"Nunito", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family:var(--b);
+      background:
+        radial-gradient(900px 700px at 8% -8%, rgba(126,107,255,.25), transparent 55%),
+        radial-gradient(900px 700px at 110% 8%, rgba(255,116,164,.22), transparent 58%),
+        radial-gradient(900px 700px at 50% 110%, rgba(90,209,195,.16), transparent 58%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:radial-gradient(600px 400px at 85% 5%, rgba(255,255,255,.35), transparent 60%);
+      opacity:.35;
+    }
+
+    button,input,select,textarea{font:inherit;color:inherit}
+    button{cursor:pointer}
+    .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 110px}
+
+    .top{display:grid;gap:12px;margin-bottom:16px}
+    .topbar{display:flex;align-items:center;gap:12px}
+    .topbar .brand{flex:1}
+    .brand{
+      display:flex;align-items:center;gap:12px;
+      padding:14px 16px;
+      border:1px solid var(--stroke);
+      border-radius:var(--r2);
+      background:linear-gradient(180deg, #ffffff, #f6f3ff);
+      box-shadow:var(--shadow);
+      min-width:min(520px, 100%);
+    }
+    .sigil{
+      width:44px;height:44px;border-radius:14px;
+      border:1px solid rgba(126,107,255,.25);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(126,107,255,.25), transparent 55%),
+        radial-gradient(circle at 60% 75%, rgba(255,116,164,.20), transparent 50%),
+        #ffffff;
+      display:grid;place-items:center;
+      flex:0 0 auto;
+      box-shadow:0 14px 40px rgba(0,0,0,.35);
+    }
+    .sigil svg{width:22px;height:22px;fill:var(--purple)}
+    .title{display:flex;flex-direction:column;gap:4px;min-width:0}
+    .title h1{
+      font-family:var(--h);
+      font-weight:700;
+      letter-spacing:.2px;
+      font-size:18px;
+      margin:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .subtitle{color:var(--muted);font-size:13px;line-height:1.2}
+
+    .player{
+      display:flex;flex-direction:column;gap:10px;
+      padding:14px 16px;
+      border:1px solid var(--stroke);
+      border-radius:var(--r2);
+      background:#ffffff;
+      box-shadow:var(--shadow);
+      min-width:280px;
+      flex:0 0 auto;
+    }
+    .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(126,107,255,.20);
+      background:rgba(126,107,255,.08);
+      font-weight:700;
+      letter-spacing:.2px;
+      font-size:12px;
+    }
+    .badge .dot{width:8px;height:8px;border-radius:99px;background:var(--purple);box-shadow:0 0 0 6px rgba(126,107,255,.12)}
+    .name{display:flex;align-items:center;gap:8px;min-width:0}
+    .name input{
+      width:100%;
+      background:transparent;
+      border:1px dashed rgba(31,29,43,.18);
+      border-radius:12px;
+      padding:7px 10px;
+      outline:none;
+    }
+    .name input:focus{border-color:rgba(126,107,255,.55);box-shadow:0 0 0 4px rgba(126,107,255,.12)}
+    .stat{color:var(--muted);font-size:12px}
+    .xpbar{
+      height:12px;border-radius:999px;overflow:hidden;
+      background:rgba(126,107,255,.12);
+      border:1px solid rgba(126,107,255,.18);
+    }
+    .xpfill{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, var(--purple), var(--pink));
+      border-radius:999px;
+      transition:width .45s ease;
+      box-shadow:0 0 18px rgba(126,107,255,.24);
+    }
+
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:12px;align-items:start}
+    @media (max-width: 940px){
+      .top{flex-direction:column}
+      .brand{min-width:0}
+      .player{min-width:0;width:100%}
+      .grid{grid-template-columns:1fr}
+    }
+
+    .panel{
+      border:1px solid var(--stroke);
+      border-radius:var(--r2);
+      background:#ffffff;
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .panel h2{
+      margin:0;
+      font-family:var(--h);
+      font-size:15px;
+      letter-spacing:.25px;
+    }
+    .hint{margin:6px 0 0;color:var(--muted);font-size:12.5px;line-height:1.35}
+    .panel.full{grid-column:1 / -1}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      background:rgba(126,107,255,.10);
+      border:1px solid rgba(126,107,255,.20);
+      font-size:11px;font-weight:700;color:#5d4fff;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+    }
+
+    .cards{display:grid;gap:10px;margin-top:10px}
+    .card{
+      position:relative;
+      padding:12px;
+      border:1px solid rgba(31,29,43,.08);
+      border-radius:var(--r);
+      background:linear-gradient(180deg, #ffffff, #f7f5ff);
+    }
+    .card:hover{border-color:rgba(255,255,255,.18)}
+    .card .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .card .t strong{font-size:13px}
+    .meta{color:var(--muted);font-size:12px;margin-top:4px}
+
+    .rem-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .rem-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .rem-time{
+      font-weight:800;
+      font-size:14px;
+      letter-spacing:.5px;
+      padding:6px 10px;
+      border-radius:12px;
+      background:rgba(126,107,255,.12);
+      border:1px solid rgba(126,107,255,.25);
+      color:#6a5cff;
+      flex:0 0 auto;
+    }
+    .rem-title{min-width:0}
+    .rem-title strong{display:block;font-size:13px}
+    .rem-title span{display:block;color:var(--muted);font-size:12px}
+    .rem-right{display:flex;align-items:center;gap:8px}
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .btn{
+      border-radius:999px;
+      border:1px solid rgba(31,29,43,.12);
+      background:#ffffff;
+      padding:10px 14px;
+      font-weight:700;
+      font-size:13px;
+      transition:transform .08s ease, border-color .15s ease, background .15s ease;
+      user-select:none;
+    }
+    .btn:hover{border-color:rgba(126,107,255,.35);background:#f5f2ff}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{
+      border-color:rgba(126,107,255,.45);
+      background:linear-gradient(180deg, #9c86ff, #7e6bff);
+      color:#ffffff;
+    }
+    .btn.primary:hover{border-color:rgba(126,107,255,.65)}
+    .btn.mint{
+      border-color:rgba(255,116,164,.45);
+      background:linear-gradient(180deg, #ff8ab7, #ff74a4);
+      color:#ffffff;
+    }
+    .btn.danger{
+      border-color:rgba(255,122,89,.40);
+      background:linear-gradient(180deg, rgba(255,122,89,.24), rgba(255,122,89,.12));
+      color:#ffffff;
+    }
+    .btn.ghost{border-color:rgba(31,29,43,.10);background:transparent}
+    .btn.sm{padding:7px 12px;font-size:12px}
+    .btn.chip{
+      border-radius:14px;
+      background:#f6f3ff;
+      border:1px solid rgba(126,107,255,.20);
+      color:#554cff;
+      font-weight:700;
+    }
+    .icon-btn{
+      width:44px;height:44px;
+      border-radius:14px;
+      border:1px solid rgba(31,29,43,.12);
+      background:#ffffff;
+      display:grid;place-items:center;
+    }
+    .icon-btn svg{width:20px;height:20px;fill:currentColor;opacity:.9}
+
+    .form{display:grid;grid-template-columns:1fr 140px;gap:10px;margin-top:10px}
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{color:var(--muted);font-size:12px}
+    input[type="text"], input[type="number"], select, textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      padding:10px 11px;
+      outline:none;
+    }
+    textarea{min-height:74px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:rgba(84,166,255,.45);box-shadow:0 0 0 4px rgba(84,166,255,.10)}
+    .form .wide{grid-column:1 / -1}
+    @media (max-width: 520px){.form{grid-template-columns:1fr}}
+
+    .tabs{
+      position:fixed;left:0;right:0;bottom:0;
+      display:flex;justify-content:center;
+      padding:10px 12px calc(14px + env(safe-area-inset-bottom));
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0), rgba(255,255,255,.85) 22%, rgba(255,255,255,.98));
+      backdrop-filter:blur(12px);
+      border-top:1px solid rgba(31,29,43,.10);
+      z-index:50;
+    }
+    .tabbar{
+      width:min(var(--max), calc(100% - 12px));
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:8px;
+      padding:6px;
+      border-radius:20px;
+      background:#ffffff;
+      border:1px solid rgba(31,29,43,.08);
+    }
+    .tab{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      border-radius:16px;
+      padding:10px 10px;
+      border:1px solid rgba(31,29,43,.08);
+      background:#f6f3ff;
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:13px;
+    }
+    .tab:active{transform:translateY(1px)}
+    .tab svg{width:18px;height:18px;fill:currentColor;opacity:.9}
+    .tab[aria-selected="true"]{
+      border-color:rgba(126,107,255,.40);
+      background:linear-gradient(180deg, #9c86ff, #7e6bff);
+      color:#ffffff;
+      box-shadow:0 0 0 4px rgba(126,107,255,.15);
+    }
+    @media (max-width: 640px){
+      .wrap{padding:16px 14px 122px}
+      .brand{border-radius:22px}
+      .player{border-radius:22px}
+      .panel{border-radius:22px}
+      .card{border-radius:16px}
+      .tab{gap:8px;font-size:12px}
+      .tab svg{width:20px;height:20px}
+      .btn{padding:11px 16px}
+      .action-grid{grid-template-columns:1fr}
+    }
+
+    .view{display:none}
+    .view.active{display:block}
+
+    .toast{
+      position:fixed;
+      left:50%;
+      top:18px;
+      transform:translateX(-50%);
+      border-radius:999px;
+      border:1px solid rgba(126,107,255,.35);
+      background:#ffffff;
+      padding:10px 12px;
+      z-index:80;
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      display:none;
+      gap:10px;
+      align-items:center;
+    }
+    .toast.show{display:flex;animation:pop .6s ease}
+    @keyframes pop{0%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.98)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+    .toast .xp{font-family:var(--h);color:var(--purple);font-weight:700}
+
+    .modalbg{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.62);z-index:90;padding:16px}
+    .modalbg.open{display:grid}
+    .modal{
+      width:min(640px, 100%);
+      border-radius:28px;
+      border:1px solid rgba(31,29,43,.10);
+      background:linear-gradient(180deg, #ffffff, #f6f3ff);
+      box-shadow:0 28px 120px rgba(88,72,155,.35);
+      padding:16px;
+    }
+    .modal h3{margin:0 0 8px;font-family:var(--h);font-size:16px}
+    .modal p{margin:0 0 12px;color:var(--muted);line-height:1.35}
+    .mono{
+      width:100%;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      padding:10px 11px;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      color:rgba(238,240,255,.9);
+      min-height:120px;
+    }
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="xp" id="toast-xp">+0 XP</span>
+    <span id="toast-txt" class="stat">Засчитано</span>
+  </div>
+
+  <div class="modalbg" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <h3 id="modal-title">Уровень повышен</h3>
+      <p id="modal-body">Ты стал сильнее.</p>
+      <div class="btns">
+        <button class="btn primary" id="modal-ok">Ок</button>
+        <button class="btn ghost" id="modal-more">Экспорт/импорт</button>
+      </div>
+      <div id="io" style="display:none;margin-top:12px">
+        <div class="field">
+          <label for="io-text">Данные (JSON)</label>
+          <textarea class="mono" id="io-text" spellcheck="false"></textarea>
+        </div>
+        <div class="btns">
+          <button class="btn mint" id="io-export">Экспорт</button>
+          <button class="btn" id="io-import">Импорт</button>
+          <button class="btn danger" id="io-reset">Сброс</button>
+        </div>
+        <p class="hint" style="margin-top:10px">Импорт перезапишет текущий прогресс. Сброс удалит всё из localStorage.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalbg" id="settingsModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h3>Настройки</h3>
+      <p class="hint">Уведомления работают в APK. Здесь можно быстро включить и открыть данные.</p>
+      <div class="btns">
+        <button class="btn mint" id="settings-notify">Уведомления</button>
+        <button class="btn" id="settings-data">Данные</button>
+        <button class="btn ghost" id="settings-close">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header class="top">
+      <div class="topbar">
+        <div class="brand">
+          <div class="sigil" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 .8-5.2 4.4 1.7 6.8L12 16.9 5.5 20l1.7-6.8L2 8.8 9 8z"/></svg>
+          </div>
+          <div class="title">
+            <h1>Asteri</h1>
+            <div class="subtitle">Выполняй тренировки и квесты, получай XP и повышай уровень.</div>
+          </div>
+        </div>
+        <button class="icon-btn" id="open-settings" title="Настройки" aria-label="Настройки">
+          <svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.57 7.57 0 0 0 .05-.94 7.57 7.57 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.35 7.35 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.57.22-1.11.52-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.7 8.86a.5.5 0 0 0 .12.64l2.03 1.58c-.03.31-.05.63-.05.94 0 .31.02.63.05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.51.42 1.05.73 1.62.94l.36 2.54a.5.5 0 0 0 .5.42h3.84a.5.5 0 0 0 .5-.42l.36-2.54c.57-.22 1.11-.52 1.62-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/></svg>
+        </button>
+      </div>
+
+      <div class="player">
+        <div class="row">
+          <span class="badge"><span class="dot"></span> <span id="lvl">LVL 1</span></span>
+          <span class="stat" id="xp">0 XP</span>
+        </div>
+        <div class="xpbar" aria-hidden="true"><div class="xpfill" id="xpfill"></div></div>
+        <div class="row name">
+          <span class="stat">Имя</span>
+          <input id="name" type="text" value="Герой" maxlength="26" aria-label="Имя персонажа" />
+        </div>
+        <div class="row">
+          <span class="stat">Серия: <strong id="streak">0</strong> дн.</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" data-view="home">
+        <div class="grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Сегодня</h2>
+              <span class="pill">Asteri</span>
+            </div>
+            <p class="hint" id="today-hint">Сделай хотя бы один шаг, чтобы поддержать серию.</p>
+            <div class="cards" id="today-list"></div>
+            <div class="mini-grid" style="margin-top:10px">
+              <div class="mini-card">
+                <strong>Фокус</strong>
+                <span>Один квест + тренировка</span>
+              </div>
+              <div class="mini-card">
+                <strong>Ритм</strong>
+                <span>Делай понемногу каждый день</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Команды</h2>
+              <span class="pill">Быстро</span>
+            </div>
+            <div class="action-grid">
+              <div class="action-card">
+                <h3>Быстрый XP</h3>
+                <p>Мини‑успехи и дисциплина без лишних экранов.</p>
+                <div class="action-row">
+                  <button class="btn chip sm" data-xp="10" data-reason="Маленькая победа">+10</button>
+                  <button class="btn chip sm" data-xp="25" data-reason="Дисциплина">+25</button>
+                </div>
+              </div>
+              <div class="action-card">
+                <h3>Перейти</h3>
+                <p>Открой нужный раздел одним тапом.</p>
+                <div class="action-row">
+                  <button class="btn mint sm" id="go-training">Тренировки</button>
+                  <button class="btn sm" id="go-quests">Квесты</button>
+                </div>
+              </div>
+              <div class="action-card" style="grid-column:1 / -1">
+                <h3>Фокус дня</h3>
+                <p>Один квест + одна тренировка в день уже двигают тебя вперёд.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:12px">
+          <div class="panel full">
+            <div class="panel-head">
+              <h2>Напоминания</h2>
+              <span class="pill">Ежедневно</span>
+            </div>
+            <p class="hint" id="rem-hint">Уведомления работают в APK. В браузере напоминания не приходят.</p>
+            <div class="btns">
+              <button class="btn ghost sm" id="rem-perm">Разрешить уведомления</button>
+            </div>
+            <div class="cards" id="rem-list"></div>
+            <form class="form" id="rem-form" style="margin-top:8px">
+              <div class="field wide">
+                <label for="rem-title">Название</label>
+                <input id="rem-title" type="text" placeholder="Например: Вода" />
+              </div>
+              <div class="field">
+                <label for="rem-time">Время</label>
+                <input id="rem-time" type="time" required />
+              </div>
+              <div class="field">
+                <label for="rem-daily">Повтор</label>
+                <select id="rem-daily">
+                  <option value="daily">Ежедневно</option>
+                </select>
+              </div>
+              <div class="btns" style="margin-top:0">
+                <button class="btn primary" type="submit">Добавить</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="training">
+        <div class="grid">
+          <div class="panel">
+            <h2>Тренировки</h2>
+            <p class="hint">Нажми “Завершить” и получи XP. Можно добавлять свои тренировки.</p>
+            <div class="cards" id="workout-list"></div>
+          </div>
+          <div class="panel">
+            <h2>Добавить тренировку</h2>
+            <p class="hint">Сделай шаблон: название + XP за выполнение.</p>
+            <form class="form" id="workout-form">
+              <div class="field wide">
+                <label for="w-title">Название</label>
+                <input id="w-title" type="text" placeholder="Например: Отжимания 3x10" required />
+              </div>
+              <div class="field">
+                <label for="w-type">Тип</label>
+                <select id="w-type">
+                  <option value="strength">Сила</option>
+                  <option value="cardio">Кардио</option>
+                  <option value="mobility">Мобилити</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="w-xp">XP</label>
+                <input id="w-xp" type="number" min="5" max="500" step="5" value="35" required />
+              </div>
+              <div class="field wide">
+                <label for="w-notes">Заметка (необязательно)</label>
+                <textarea id="w-notes" placeholder="Например: темп медленный, пауза 60с"></textarea>
+              </div>
+              <div class="btns" style="margin-top:0">
+                <button class="btn mint" type="submit">Добавить</button>
+                <button class="btn ghost" type="button" id="w-seed">Добавить базовые</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="quests">
+        <div class="grid">
+          <div class="panel">
+            <h2>Доска квестов</h2>
+            <p class="hint">Создавай квесты, выполняй, получай XP. Можно сделать ежедневные.</p>
+            <div class="cards" id="quest-list"></div>
+          </div>
+          <div class="panel">
+            <h2>Создать квест</h2>
+            <p class="hint">Если не знаешь XP: лёгкий 20, средний 40, сложный 70.</p>
+            <form class="form" id="quest-form">
+              <div class="field wide">
+                <label for="q-title">Название</label>
+                <input id="q-title" type="text" placeholder="Например: Сделать растяжку 10 минут" required />
+              </div>
+              <div class="field">
+                <label for="q-repeat">Повтор</label>
+                <select id="q-repeat">
+                  <option value="none">Один раз</option>
+                  <option value="daily">Ежедневно</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="q-xp">XP</label>
+                <input id="q-xp" type="number" min="5" max="500" step="5" value="40" required />
+              </div>
+              <div class="field wide">
+                <label for="q-notes">Заметка (необязательно)</label>
+                <textarea id="q-notes" placeholder="Например: до 22:00, без телефона"></textarea>
+              </div>
+              <div class="btns" style="margin-top:0">
+                <button class="btn primary" type="submit">Создать</button>
+                <button class="btn ghost" type="button" id="q-seed">Добавить примеры</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="tabs" role="navigation" aria-label="Вкладки">
+    <div class="tabbar">
+      <button class="tab" data-tab="home" aria-selected="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z"/></svg>
+        Главная
+      </button>
+      <button class="tab" data-tab="training" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M21 9v6h-2l-2 2h-2l-2-2H11l-2 2H7l-2-2H3V9h2l2-2h2l2 2h2l2-2h2l2 2zm-2 2h-1.2l-1.4-1.4h-.9L14.1 11H9.9L8.4 9.6h-.9L6.1 11H5v2h1.1l1.5 1.4h.9L9.9 13h4.2l1.5 1.4h.9l1.4-1.4H19z"/></svg>
+        Тренировки
+      </button>
+      <button class="tab" data-tab="quests" aria-selected="false">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 .6-5.3 4.5 1.7 7-6.4-3.9-6.4 3.9 1.7-7L2 9.6 9 9z"/></svg>
+        Квесты
+      </button>
+    </div>
+  </div>
+  <script>
+    const STORE_KEY = "rpg_training_v1";
+
+    const todayISO = () => new Date().toISOString().slice(0, 10);
+    const dayDiff = (aISO, bISO) => {
+      const a = new Date(aISO + "T00:00:00");
+      const b = new Date(bISO + "T00:00:00");
+      return Math.round((b - a) / (24 * 60 * 60 * 1000));
+    };
+
+    function xpStepForLevel(level){
+      // LVL1->2: 90 XP, then +~18% per level.
+      return Math.max(60, Math.floor(90 * Math.pow(1.18, level - 1)));
+    }
+    function totalXpForLevel(level){
+      let total = 0;
+      for (let l = 1; l < level; l++) total += xpStepForLevel(l);
+      return total;
+    }
+    function levelFromXp(xp){
+      let level = 1;
+      while (xp >= totalXpForLevel(level + 1)) level++;
+      return level;
+    }
+    function progressToNext(xp){
+      const level = levelFromXp(xp);
+      const curStart = totalXpForLevel(level);
+      const nextStart = totalXpForLevel(level + 1);
+      const cur = xp - curStart;
+      const need = nextStart - curStart;
+      const pct = need ? Math.max(0, Math.min(1, cur / need)) : 0;
+      return { level, cur, need, pct };
+    }
+
+    function uid(){
+      return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+    }
+    function clampInt(n, min, max){
+      const v = Math.floor(Number(n));
+      if (!Number.isFinite(v)) return min;
+      return Math.max(min, Math.min(max, v));
+    }
+    function esc(s){
+      return String(s)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;");
+    }
+
+    const seedWorkouts = () => ([
+      { id: uid(), title: "Отжимания (3 подхода)", type: "strength", xp: 35, notes: "" },
+      { id: uid(), title: "Приседания (3 подхода)", type: "strength", xp: 35, notes: "" },
+      { id: uid(), title: "Планка (2 минуты)", type: "mobility", xp: 25, notes: "" },
+      { id: uid(), title: "Быстрая ходьба (20 минут)", type: "cardio", xp: 45, notes: "" }
+    ]);
+    const seedQuests = () => ([
+      { id: uid(), title: "Разминка 7 минут", repeat: "daily", xp: 20, notes: "", doneOn: null, doneAt: null, createdAt: Date.now() },
+      { id: uid(), title: "Тренировка без пропуска", repeat: "none", xp: 70, notes: "Выбери любую и заверши", doneOn: null, doneAt: null, createdAt: Date.now() },
+      { id: uid(), title: "Лечь спать вовремя", repeat: "daily", xp: 25, notes: "Сон = прокачка", doneOn: null, doneAt: null, createdAt: Date.now() }
+    ]);
+
+    function defaultState(){
+      return {
+        version: 1,
+        player: { name: "Герой", xp: 0, streak: 0, lastCompleteDay: null },
+        workouts: seedWorkouts(),
+        quests: seedQuests(),
+        log: [],
+        reminders: [],
+        nextReminderId: 1,
+        notificationsEnabled: false
+      };
+    }
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if(!raw) return defaultState();
+        const data = JSON.parse(raw);
+        if(!data || typeof data !== "object") return defaultState();
+        if(data.version !== 1) return defaultState();
+
+        const merged = defaultState();
+        merged.player = { ...merged.player, ...(data.player || {}) };
+        merged.workouts = Array.isArray(data.workouts) ? data.workouts : merged.workouts;
+        merged.quests = Array.isArray(data.quests) ? data.quests : merged.quests;
+        merged.log = Array.isArray(data.log) ? data.log : merged.log;
+        merged.reminders = Array.isArray(data.reminders) ? data.reminders : merged.reminders;
+        merged.nextReminderId = clampInt(data.nextReminderId || merged.nextReminderId, 1, 999999);
+        merged.notificationsEnabled = Boolean(data.notificationsEnabled);
+
+        merged.player.xp = clampInt(merged.player.xp, 0, 99999999);
+        merged.player.streak = clampInt(merged.player.streak, 0, 99999);
+        if (typeof merged.player.name !== "string" || !merged.player.name.trim()) merged.player.name = "Герой";
+        merged.player.name = merged.player.name.slice(0, 26);
+        return merged;
+      }catch{
+        return defaultState();
+      }
+    }
+    function saveState(){
+      localStorage.setItem(STORE_KEY, JSON.stringify(S));
+    }
+
+    const S = loadState();
+
+    const $ = (id) => document.getElementById(id);
+    const elLvl = $("lvl");
+    const elXp = $("xp");
+    const elXpFill = $("xpfill");
+    const elName = $("name");
+    const elStreak = $("streak");
+    const elTodayHint = $("today-hint");
+    const elTodayList = $("today-list");
+    const elWorkoutList = $("workout-list");
+    const elQuestList = $("quest-list");
+    const elRemList = $("rem-list");
+    const elRemForm = $("rem-form");
+    const elRemTitle = $("rem-title");
+    const elRemTime = $("rem-time");
+    const elRemPerm = $("rem-perm");
+    const elRemHint = $("rem-hint");
+    const elToast = $("toast");
+    const elToastXp = $("toast-xp");
+    const elToastTxt = $("toast-txt");
+    const elModalBg = $("modal");
+    const elModalTitle = $("modal-title");
+    const elModalBody = $("modal-body");
+    const elModalOk = $("modal-ok");
+    const elModalMore = $("modal-more");
+    const elIO = $("io");
+    const elIOText = $("io-text");
+    const elSettingsModal = $("settingsModal");
+    const elSettingsClose = $("settings-close");
+    const elSettingsNotify = $("settings-notify");
+    const elSettingsData = $("settings-data");
+    const elOpenSettings = $("open-settings");
+
+    let toastTimer = null;
+
+    function openModal(title, body){
+      elModalTitle.textContent = title;
+      elModalBody.textContent = body;
+      elIO.style.display = "none";
+      elModalMore.textContent = "Экспорт/импорт";
+      elModalBg.classList.add("open");
+    }
+    function openSettings(){
+      elSettingsModal.classList.add("open");
+    }
+    function closeSettings(){
+      elSettingsModal.classList.remove("open");
+    }
+    function openDataModal(){
+      openModal("Данные", "Экспортируй JSON, чтобы сохранить прогресс. Импорт восстановит.");
+      elIO.style.display = "block";
+      elModalMore.textContent = "Скрыть";
+      elIOText.value = JSON.stringify(S, null, 2);
+    }
+    function closeModal(){
+      elModalBg.classList.remove("open");
+    }
+    function showToast(xp, text){
+      const n = Number(xp) || 0;
+      elToastXp.textContent = n > 0 ? `+${n} XP` : "OK";
+      elToastTxt.textContent = text || "Засчитано";
+      elToast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => elToast.classList.remove("show"), 1400);
+    }
+
+    function isNative(){
+      return Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    }
+    function getLocalNotifications(){
+      return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+    }
+    async function requestNotifyPermission(){
+      const LN = getLocalNotifications();
+      if(!LN) return false;
+      const res = await LN.requestPermissions();
+      const ok = res?.display === "granted" || res?.receive === "granted" || res?.granted === true;
+      S.notificationsEnabled = ok;
+      saveState();
+      updateRemHint();
+      return ok;
+    }
+    function updateRemHint(){
+      if(!isNative()){
+        elRemHint.textContent = "Уведомления работают в APK. В браузере напоминания не приходят.";
+        return;
+      }
+      elRemHint.textContent = S.notificationsEnabled
+        ? "Уведомления включены. Напоминания будут приходить ежедневно."
+        : "Нужно разрешить уведомления, чтобы напоминания работали.";
+    }
+    async function syncReminders(){
+      const LN = getLocalNotifications();
+      if(!LN || !S.notificationsEnabled) return;
+      const ids = S.reminders.map(r => ({ id: r.id }));
+      if(ids.length){
+        try{ await LN.cancel({ notifications: ids }); }catch{}
+      }
+      const list = S.reminders.filter(r => r.enabled);
+      if(!list.length) return;
+      const notifications = list.map(r => {
+        const parts = (r.time || "09:00").split(":");
+        const hour = Number(parts[0] || 9);
+        const minute = Number(parts[1] || 0);
+        return {
+          id: r.id,
+          title: r.title || "Напоминание",
+          body: r.note || "Пора выполнить квест",
+          schedule: { on: { hour, minute }, repeats: true }
+        };
+      });
+      await LN.schedule({ notifications });
+    }
+
+    function updateStreakOnComplete(){
+      const t = todayISO();
+      const last = S.player.lastCompleteDay;
+      if(!last){
+        S.player.streak = 1;
+        S.player.lastCompleteDay = t;
+        return;
+      }
+      const diff = dayDiff(last, t);
+      if(diff === 0) return;
+      if(diff === 1){
+        S.player.streak = clampInt(S.player.streak + 1, 0, 99999);
+        S.player.lastCompleteDay = t;
+        return;
+      }
+      S.player.streak = 1;
+      S.player.lastCompleteDay = t;
+    }
+
+    function gainXp(amount, reason){
+      const xp = clampInt(amount, 1, 9999);
+      const prevLevel = levelFromXp(S.player.xp);
+      updateStreakOnComplete();
+      S.player.xp = clampInt(S.player.xp + xp, 0, 99999999);
+      const nextLevel = levelFromXp(S.player.xp);
+      S.log.unshift({ id: uid(), ts: Date.now(), xp, reason: String(reason || "XP"), day: todayISO() });
+      S.log = S.log.slice(0, 200);
+      saveState();
+
+      showToast(xp, reason || "XP");
+      renderHeader();
+      renderHome();
+
+      if(nextLevel > prevLevel){
+        openModal("Уровень повышен!", `Ты достиг уровня ${nextLevel}. Продолжай в том же духе.`);
+      }
+    }
+
+    function typeLabel(type){
+      if(type === "cardio") return "Кардио";
+      if(type === "mobility") return "Мобилити";
+      return "Сила";
+    }
+
+    function isQuestDone(q){
+      if(q.repeat === "daily") return q.doneOn === todayISO();
+      return Boolean(q.doneAt);
+    }
+    function completeQuest(id){
+      const q = S.quests.find(x => x.id === id);
+      if(!q || isQuestDone(q)) return;
+      if(q.repeat === "daily") q.doneOn = todayISO();
+      else q.doneAt = Date.now();
+      saveState();
+      gainXp(q.xp, `Квест: ${q.title}`);
+      renderQuests();
+    }
+    function completeWorkout(id){
+      const w = S.workouts.find(x => x.id === id);
+      if(!w) return;
+      saveState();
+      gainXp(w.xp, `Тренировка: ${w.title}`);
+    }
+
+    function renderHeader(){
+      const p = progressToNext(S.player.xp);
+      elLvl.textContent = `LVL ${p.level}`;
+      elXp.textContent = `${S.player.xp} XP`;
+      elXpFill.style.width = `${Math.round(p.pct * 100)}%`;
+      elStreak.textContent = String(S.player.streak || 0);
+      elName.value = S.player.name || "Герой";
+    }
+
+    function renderTodayItem(it){
+      const icon = it.kind === "quest"
+        ? `<span class="badge" style="border-color:rgba(245,195,75,.24)"><span class="dot"></span>Квест</span>`
+        : `<span class="badge" style="border-color:rgba(35,215,162,.24)"><span class="dot" style="background:var(--mint);box-shadow:0 0 0 6px rgba(35,215,162,.12)"></span>Тренировка</span>`;
+      return `
+        <div class="card">
+          <div class="t">
+            <strong>${esc(it.title)}</strong>
+            ${icon}
+          </div>
+          <div class="meta">${esc(it.meta)} · <strong>${it.xp} XP</strong></div>
+          <div class="btns">
+            <button class="btn ${it.kind === "quest" ? "primary" : "mint"}" data-act="1" data-kind="${it.kind}" data-id="${it.id}">Завершить</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHome(){
+      const t = todayISO();
+      const daily = S.quests.filter(q => q.repeat === "daily");
+      const dailyDone = daily.filter(isQuestDone).length;
+      elTodayHint.textContent = daily.length
+        ? `Ежедневные квесты: ${dailyDone}/${daily.length} выполнено сегодня (${t}).`
+        : `Сегодня ${t}. Добавь хотя бы один ежедневный квест для серии.`;
+
+      const items = [];
+      for(const q of daily.filter(q => !isQuestDone(q)).slice(0, 3)){
+        items.push({ kind: "quest", title: q.title, xp: q.xp, id: q.id, meta: "Ежедневный квест" });
+      }
+      for(const w of S.workouts.slice(0, 3)){
+        items.push({ kind: "workout", title: w.title, xp: w.xp, id: w.id, meta: typeLabel(w.type) });
+      }
+
+      elTodayList.innerHTML = items.length ? items.map(renderTodayItem).join("") : `
+        <div class="card">
+          <div class="t"><strong>Пусто</strong><span class="badge"><span class="dot"></span>Старт</span></div>
+          <div class="meta">Добавь тренировку или квест, и они появятся здесь.</div>
+        </div>
+      `;
+
+      elTodayList.querySelectorAll("[data-act]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const kind = btn.getAttribute("data-kind");
+          const id = btn.getAttribute("data-id");
+          if(kind === "quest") completeQuest(id);
+          if(kind === "workout") completeWorkout(id);
+        });
+      });
+    }
+
+    function renderTraining(){
+      elWorkoutList.innerHTML = S.workouts.length ? S.workouts.map(w => `
+        <div class="card">
+          <div class="t">
+            <strong>${esc(w.title)}</strong>
+            <span class="badge" style="border-color:rgba(35,215,162,.24)"><span class="dot" style="background:var(--mint);box-shadow:0 0 0 6px rgba(35,215,162,.12)"></span>${typeLabel(w.type)}</span>
+          </div>
+          <div class="meta">${w.notes ? esc(w.notes) + " · " : ""}<strong>${w.xp} XP</strong></div>
+          <div class="btns">
+            <button class="btn mint" data-workout="${w.id}">Завершить</button>
+            <button class="btn ghost" data-workout-del="${w.id}">Удалить</button>
+          </div>
+        </div>
+      `).join("") : `
+        <div class="card">
+          <div class="t"><strong>Тренировок нет</strong><span class="badge" style="border-color:rgba(35,215,162,.24)"><span class="dot" style="background:var(--mint);box-shadow:0 0 0 6px rgba(35,215,162,.12)"></span>Сила</span></div>
+          <div class="meta">Нажми “Добавить базовые” справа, или создай свою.</div>
+        </div>
+      `;
+
+      elWorkoutList.querySelectorAll("[data-workout]").forEach(b => b.addEventListener("click", () => completeWorkout(b.getAttribute("data-workout"))));
+      elWorkoutList.querySelectorAll("[data-workout-del]").forEach(b => b.addEventListener("click", () => {
+        S.workouts = S.workouts.filter(w => w.id !== b.getAttribute("data-workout-del"));
+        saveState();
+        renderHome();
+        renderTraining();
+      }));
+    }
+
+    function renderQuests(){
+      const list = [...S.quests.filter(q => !isQuestDone(q)), ...S.quests.filter(isQuestDone)];
+      elQuestList.innerHTML = list.length ? list.map(q => {
+        const doneNow = isQuestDone(q);
+        const badge = q.repeat === "daily"
+          ? `<span class="badge" style="border-color:rgba(245,195,75,.24)"><span class="dot"></span>Ежедневно</span>`
+          : `<span class="badge" style="border-color:rgba(255,255,255,.14)"><span class="dot" style="background:rgba(238,240,255,.75);box-shadow:0 0 0 6px rgba(238,240,255,.10)"></span>Один раз</span>`;
+        return `
+          <div class="card" style="${doneNow ? "opacity:.72" : ""}">
+            <div class="t"><strong>${esc(q.title)}</strong>${badge}</div>
+            <div class="meta">${q.notes ? esc(q.notes) + " · " : ""}<strong>${q.xp} XP</strong>${doneNow ? " · Выполнено" : ""}</div>
+            <div class="btns">
+              <button class="btn primary" ${doneNow ? "disabled" : ""} data-quest="${q.id}">${doneNow ? "Готово" : "Завершить"}</button>
+              <button class="btn ghost" data-quest-del="${q.id}">Удалить</button>
+            </div>
+          </div>
+        `;
+      }).join("") : `
+        <div class="card">
+          <div class="t"><strong>Квестов нет</strong><span class="badge"><span class="dot"></span>Доска</span></div>
+          <div class="meta">Создай квест справа, и он появится здесь.</div>
+        </div>
+      `;
+
+      elQuestList.querySelectorAll("[data-quest]").forEach(b => b.addEventListener("click", () => completeQuest(b.getAttribute("data-quest"))));
+      elQuestList.querySelectorAll("[data-quest-del]").forEach(b => b.addEventListener("click", () => {
+        S.quests = S.quests.filter(q => q.id !== b.getAttribute("data-quest-del"));
+        saveState();
+        renderHome();
+        renderQuests();
+      }));
+    }
+
+    function renderAll(){
+      renderHeader();
+      renderHome();
+      renderTraining();
+      renderQuests();
+      renderReminders();
+      updateRemHint();
+    }
+
+    function renderReminders(){
+      if(!S.reminders.length){
+        elRemList.innerHTML = `
+          <div class="card">
+            <div class="t"><strong>Нет напоминаний</strong><span class="badge"><span class="dot"></span>Старт</span></div>
+            <div class="meta">Добавь напоминания для воды, квестов и тренировок.</div>
+          </div>
+        `;
+        return;
+      }
+      elRemList.innerHTML = S.reminders.map(r => `
+        <div class="card">
+          <div class="rem-item">
+            <div class="rem-left">
+              <div class="rem-time">${r.time || "09:00"}</div>
+              <div class="rem-title">
+                <strong>${esc(r.title || "Напоминание")}</strong>
+                <span>Ежедневно</span>
+              </div>
+            </div>
+            <div class="rem-right">
+              <label class="toggle">
+                <input type="checkbox" data-rem-toggle="${r.id}" ${r.enabled ? "checked" : ""} />
+                Вкл
+              </label>
+              <button class="btn ghost" data-rem-del="${r.id}">Удалить</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      elRemList.querySelectorAll("[data-rem-toggle]").forEach(el => {
+        el.addEventListener("change", async () => {
+          const id = Number(el.getAttribute("data-rem-toggle"));
+          const r = S.reminders.find(x => x.id === id);
+          if(!r) return;
+          r.enabled = el.checked;
+          saveState();
+          await syncReminders();
+        });
+      });
+      elRemList.querySelectorAll("[data-rem-del]").forEach(el => {
+        el.addEventListener("click", async () => {
+          const id = Number(el.getAttribute("data-rem-del"));
+          S.reminders = S.reminders.filter(x => x.id !== id);
+          saveState();
+          renderReminders();
+          await syncReminders();
+        });
+      });
+    }
+
+    function setTab(tab){
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", "false"));
+      const view = document.querySelector(`[data-view="${tab}"]`);
+      const btn = document.querySelector(`.tab[data-tab="${tab}"]`);
+      if(view) view.classList.add("active");
+      if(btn) btn.setAttribute("aria-selected", "true");
+      history.replaceState(null, "", "#" + tab);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Tabs
+    document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
+    $("go-training").addEventListener("click", () => setTab("training"));
+    $("go-quests").addEventListener("click", () => setTab("quests"));
+
+    // Quick XP
+    document.querySelectorAll("[data-xp]").forEach(b => b.addEventListener("click", () => gainXp(b.getAttribute("data-xp"), b.getAttribute("data-reason"))));
+
+    // Name
+    elName.addEventListener("change", () => {
+      const v = elName.value.trim().slice(0, 26);
+      S.player.name = v || "Герой";
+      saveState();
+      renderHeader();
+    });
+
+    // Forms
+    $("workout-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = $("w-title").value.trim();
+      if(!title) return;
+      const w = {
+        id: uid(),
+        title: title.slice(0, 80),
+        type: $("w-type").value,
+        xp: clampInt($("w-xp").value, 5, 500),
+        notes: ($("w-notes").value || "").trim().slice(0, 180)
+      };
+      S.workouts.unshift(w);
+      saveState();
+      $("w-title").value = "";
+      $("w-notes").value = "";
+      renderHome();
+      renderTraining();
+      showToast(0, "Тренировка добавлена");
+    });
+    $("quest-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const title = $("q-title").value.trim();
+      if(!title) return;
+      const q = {
+        id: uid(),
+        title: title.slice(0, 80),
+        repeat: $("q-repeat").value,
+        xp: clampInt($("q-xp").value, 5, 500),
+        notes: ($("q-notes").value || "").trim().slice(0, 180),
+        doneOn: null,
+        doneAt: null,
+        createdAt: Date.now()
+      };
+      S.quests.unshift(q);
+      saveState();
+      $("q-title").value = "";
+      $("q-notes").value = "";
+      renderHome();
+      renderQuests();
+      showToast(0, "Квест создан");
+    });
+
+    elRemForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const time = (elRemTime.value || "").trim();
+      if(!time) return;
+      const title = (elRemTitle.value || "").trim() || "Напоминание";
+      const item = {
+        id: S.nextReminderId++,
+        title: title.slice(0, 60),
+        time,
+        enabled: true
+      };
+      S.reminders.push(item);
+      saveState();
+      elRemTitle.value = "";
+      renderReminders();
+      await syncReminders();
+      showToast(0, "Напоминание добавлено");
+    });
+
+    // Seeds
+    $("w-seed").addEventListener("click", () => {
+      if(S.workouts.length) return openModal("Базовые тренировки", "У тебя уже есть список. Если хочешь, удали лишнее и добавь базовые заново.");
+      S.workouts = seedWorkouts();
+      saveState();
+      renderHome();
+      renderTraining();
+      showToast(0, "Добавлены базовые тренировки");
+    });
+    $("q-seed").addEventListener("click", () => {
+      if(S.quests.length) return openModal("Примеры квестов", "У тебя уже есть квесты. Если хочешь, удали лишнее и добавь примеры заново.");
+      S.quests = seedQuests();
+      saveState();
+      renderHome();
+      renderQuests();
+      showToast(0, "Добавлены примеры квестов");
+    });
+
+    elRemPerm.addEventListener("click", async () => {
+      if(!isNative()){
+        openModal("Уведомления", "Эта функция работает в APK. В браузере уведомления не приходят.");
+        return;
+      }
+      const ok = await requestNotifyPermission();
+      if(ok){
+        await syncReminders();
+        showToast(0, "Уведомления включены");
+      }else{
+        openModal("Уведомления", "Разрешение не выдано. Проверь настройки уведомлений на телефоне.");
+      }
+    });
+
+    if (elSettingsNotify) {
+      elSettingsNotify.addEventListener("click", async () => {
+        closeSettings();
+        elRemPerm.click();
+      });
+    }
+
+    // Modal / IO
+    elModalOk.addEventListener("click", closeModal);
+    elModalBg.addEventListener("click", (e) => { if(e.target === elModalBg) closeModal(); });
+    if (elOpenSettings) {
+      elOpenSettings.addEventListener("click", openSettings);
+    }
+    if (elSettingsClose) {
+      elSettingsClose.addEventListener("click", closeSettings);
+    }
+    if (elSettingsModal) {
+      elSettingsModal.addEventListener("click", (e) => { if(e.target === elSettingsModal) closeSettings(); });
+    }
+    if (elSettingsData) {
+      elSettingsData.addEventListener("click", () => {
+        closeSettings();
+        openDataModal();
+      });
+    }
+    elModalMore.addEventListener("click", () => {
+      const open = elIO.style.display !== "none";
+      elIO.style.display = open ? "none" : "block";
+      elModalMore.textContent = open ? "Экспорт/импорт" : "Скрыть";
+    });
+    $("io-export").addEventListener("click", () => {
+      elIO.style.display = "block";
+      elModalMore.textContent = "Скрыть";
+      elIOText.value = JSON.stringify(S, null, 2);
+      elIOText.focus();
+    });
+    $("io-import").addEventListener("click", () => {
+      try{
+        const data = JSON.parse(elIOText.value || "");
+        if(!data || data.version !== 1) throw new Error("bad");
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+        location.reload();
+      }catch{
+        openModal("Импорт", "Не получилось прочитать JSON. Проверь формат и версию.");
+      }
+    });
+    $("io-reset").addEventListener("click", () => {
+      localStorage.removeItem(STORE_KEY);
+      location.reload();
+    });
+
+    // Boot
+    renderAll();
+    const hash = (location.hash || "").replace("#", "");
+    if(hash === "training" || hash === "quests" || hash === "home") setTab(hash);
+    function updateBottomHide(){
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
+      document.body.classList.toggle("hide-on-bottom", nearBottom);
+    }
+    window.addEventListener("scroll", updateBottomHide, { passive: true });
+    updateBottomHide();
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>
