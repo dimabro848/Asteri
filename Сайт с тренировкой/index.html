@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
@@ -1228,6 +1228,133 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    // AI helpers
+    function getResponseText(data){
+      if(!data) return "";
+      if(typeof data.output_text === "string" && data.output_text) return data.output_text;
+      const output = Array.isArray(data.output) ? data.output : [];
+      for (const item of output){
+        if(item && item.type === "message" && Array.isArray(item.content)){
+          const part = item.content.find(p => p && p.type === "output_text" && typeof p.text === "string");
+          if(part) return part.text;
+        }
+      }
+      return "";
+    }
+
+    async function postOpenAI(body){
+      const url = "https://api.openai.com/v1/responses";
+      const headers = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${S.aiKey}`
+      };
+      const capHttp = window.CapacitorHttp || (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorHttp);
+      if(isNative() && capHttp && typeof capHttp.request === "function"){
+        const res = await capHttp.request({ method: "POST", url, headers, data: body });
+        const ok = res.status >= 200 && res.status < 300;
+        let data = res.data;
+        if(typeof data === "string"){
+          try{ data = JSON.parse(data); }catch{}
+        }
+        return { ok, status: res.status, data, raw: typeof res.data === "string" ? res.data : JSON.stringify(res.data || {}) };
+      }
+      const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+      const raw = await res.text();
+      let data = null;
+      try{ data = JSON.parse(raw); }catch{}
+      return { ok: res.ok, status: res.status, data, raw };
+    }
+
+    async function estimateXpAI(title, notes){
+      if(!S.aiKey){
+        openSettings();
+        throw new Error("NO_KEY");
+      }
+      const prompt = `
+Ты ассистент, оценивающий XP за квесты в RPG-трекере.
+Дай только JSON: {"xp": число от 10 до 150, "reason": кратко}
+Квест: ${title}
+Заметка: ${notes || "нет"}
+Сложность оцени по времени, усилию и дисциплине.
+      `.trim();
+      const body = {
+        model: "gpt-4o-mini",
+        input: prompt,
+        text: {
+          format: {
+            type: "json_schema",
+            name: "xp_score",
+            strict: true,
+            schema: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                xp: { type: "integer", minimum: 10, maximum: 150 },
+                reason: { type: "string" }
+              },
+              required: ["xp", "reason"]
+            }
+          }
+        }
+      };
+
+      const { ok, status, data, raw } = await postOpenAI(body);
+      if(!ok){
+        const msg = data && data.error && data.error.message ? data.error.message : (raw || "").slice(0, 200);
+        const code = data && data.error && data.error.code ? data.error.code : "";
+        throw new Error(`HTTP_${status} ${code} ${msg}`.trim());
+      }
+
+      const text = getResponseText(data);
+      if(!text) throw new Error("NO_OUTPUT");
+      let parsed = null;
+      try{ parsed = JSON.parse(text); }catch{}
+      if(!parsed){
+        const m = text.match(/\{[\s\S]*\}/);
+        if(m){
+          try{ parsed = JSON.parse(m[0]); }catch{}
+        }
+      }
+      if(!parsed) throw new Error("BAD_JSON");
+      const xp = clampInt(parsed.xp, 10, 150);
+      return { xp, reason: String(parsed.reason || "").slice(0, 120) };
+    }
+
+    async function testAiKey(){
+      if(elAiKey){
+        S.aiKey = elAiKey.value.trim();
+        saveState();
+      }
+      if(!S.aiKey){
+        openSettings();
+        openModal("AI ключ", "Вставь ключ и попробуй снова.");
+        return;
+      }
+      const prev = elSettingsTestKey ? elSettingsTestKey.textContent : "";
+      if(elSettingsTestKey){
+        elSettingsTestKey.disabled = true;
+        elSettingsTestKey.textContent = "Проверяю...";
+      }
+      try{
+        await estimateXpAI("Проверка ключа", "Короткий тест");
+        showToast(0, "Ключ работает");
+      }catch(e){
+        const msg = String(e.message || "Ошибка");
+        let hint = msg;
+        if(msg.includes("401")){
+          hint = "Похоже, ключ неверный или не активирован.";
+        }else if(msg.includes("model")){
+          hint = "Модель недоступна для этого ключа. Попробуем другую при необходимости.";
+        }
+        openModal("AI ключ", `Не удалось проверить ключ. ${hint}`);
+      }finally{
+        if(elSettingsTestKey){
+          elSettingsTestKey.disabled = false;
+          elSettingsTestKey.textContent = prev || "Проверить ключ";
+        }
+      }
+    }
+
     // Tabs
     document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setTab(b.getAttribute("data-tab"))));
     $("go-training").addEventListener("click", () => setTab("training"));
@@ -1304,7 +1431,8 @@
         try{
           const res = await estimateXpAI(title, notes);
           $("q-xp").value = res.xp;
-          showToast(0, `AI XP: ${res.xp}`);
+          const note = res.reason ? `AI XP: ${res.xp} • ${res.reason}` : `AI XP: ${res.xp}`;
+          showToast(0, note);
         }catch(e){
           if(String(e.message) === "NO_KEY"){
             openModal("AI XP", "Добавь OpenAI ключ в настройках (шестерёнка).");
@@ -1433,10 +1561,12 @@
       });
     }
     if (elAiKey) {
-      elAiKey.addEventListener("change", () => {
+      const syncAiKey = () => {
         S.aiKey = elAiKey.value.trim();
         saveState();
-      });
+      };
+      elAiKey.addEventListener("input", syncAiKey);
+      elAiKey.addEventListener("change", syncAiKey);
     }
     elModalMore.addEventListener("click", () => {
       const open = elIO.style.display !== "none";
@@ -1480,52 +1610,3 @@
   </script>
 </body>
 </html>
-    async function estimateXpAI(title, notes){
-      if(!S.aiKey){
-        openSettings();
-        throw new Error("NO_KEY");
-      }
-      const prompt = `
-Ты ассистент, оценивающий XP за квесты в RPG-трекере.
-Дай только JSON: {"xp": число от 10 до 150, "reason": кратко}
-Квест: ${title}
-Заметка: ${notes || "нет"}
-Сложность оцени по времени, усилию и дисциплине.
-      `.trim();
-
-      const res = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${S.aiKey}`
-        },
-        body: JSON.stringify({
-          model: "gpt-5-mini",
-          input: prompt
-        })
-      });
-
-      const raw = await res.text();
-      let data = null;
-      try{ data = JSON.parse(raw); }catch{}
-      if(!res.ok){
-        const msg = data && data.error && data.error.message ? data.error.message : raw.slice(0, 200);
-        const code = data && data.error && data.error.code ? data.error.code : "";
-        throw new Error(`HTTP_${res.status} ${code} ${msg}`.trim());
-      }
-      const text = data.output_text || "";
-      const jsonText = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(jsonText);
-      const xp = clampInt(parsed.xp, 10, 150);
-      return { xp, reason: String(parsed.reason || "").slice(0, 120) };
-    }
-
-    async function testAiKey(){
-      try{
-        await estimateXpAI("Проверка ключа", "Короткий тест");
-        showToast(0, "Ключ работает");
-      }catch(e){
-        const msg = String(e.message || "Ошибка");
-        openModal("AI ключ", `Не удалось проверить ключ. ${msg}`);
-      }
-    }
