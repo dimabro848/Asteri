@@ -1278,6 +1278,12 @@
     renderAll();
     const hash = (location.hash || "").replace("#", "");
     if(hash === "training" || hash === "quests" || hash === "home") setTab(hash);
+    function updateBottomHide(){
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
+      document.body.classList.toggle("hide-on-bottom", nearBottom);
+    }
+    window.addEventListener("scroll", updateBottomHide, { passive: true });
+    updateBottomHide();
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./sw.js").catch(() => {});
     }
@@ -1308,6 +1314,13 @@
     .action-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}
     .action-row{display:flex;gap:8px;flex-wrap:wrap}
     .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .hide-on-bottom .section-head,
+    .hide-on-bottom .action-grid,
+    .hide-on-bottom .action-card,
+    .hide-on-bottom .action-row,
+    .hide-on-bottom .mini-grid{
+      display:none !important;
+    }
     .mini-card{
       border:1px solid rgba(31,29,43,.08);
       background:#f8f6ff;
