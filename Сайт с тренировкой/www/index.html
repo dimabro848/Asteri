@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f1ecff" />
+  <meta name="theme-color" content="#0b1020" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -21,7 +21,11 @@
       --ink:#1f1d2b;
       --muted:#6b6b8b;
       --stroke:rgba(31,29,43,.08);
+      --stroke-strong:rgba(31,29,43,.12);
       --shadow:0 18px 46px rgba(88,72,155,.18);
+      --card0:#ffffff;
+      --card1:#f6f3ff;
+      --card2:#f7f5ff;
 
       --purple:#7e6bff;
       --purple2:#9a7bff;
@@ -30,12 +34,84 @@
       --gold:#ffc46b;
       --sky:#6ab6ff;
 
+      --pill-bg:rgba(126,107,255,.10);
+      --pill-border:rgba(126,107,255,.20);
+      --pill-text:#5d4fff;
+      --toggle-bg:#f6f3ff;
+      --toggle-border:rgba(126,107,255,.20);
+      --toggle-text:#554cff;
+      --accent-soft:rgba(126,107,255,.12);
+      --accent-border:rgba(126,107,255,.18);
+      --accent-text:#6a5cff;
+      --badge-bg:rgba(126,107,255,.08);
+      --badge-border:rgba(126,107,255,.20);
+      --badge-dot-shadow:rgba(126,107,255,.12);
+      --input-bg:#ffffff;
+      --input-border:rgba(31,29,43,.12);
+      --input-placeholder:rgba(107,107,139,.65);
+      --tabs-bg1:rgba(0,0,0,0);
+      --tabs-bg2:rgba(255,255,255,.85);
+      --tabs-bg3:rgba(255,255,255,.98);
+      --tab-bg:#f6f3ff;
+
+      --bgGlow1:rgba(126,107,255,.25);
+      --bgGlow2:rgba(255,116,164,.22);
+      --bgGlow3:rgba(90,209,195,.16);
+      --bgGlow4:rgba(255,255,255,.35);
+
       --r:20px;
       --r2:28px;
       --max:1100px;
 
       --h:"Poppins", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
       --b:"Nunito", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+    :root[data-theme="dark"]{
+      --bg0:#0b1020;
+      --bg1:#111936;
+      --ink:#eef1ff;
+      --muted:#a6aed1;
+      --stroke:rgba(255,255,255,.08);
+      --stroke-strong:rgba(255,255,255,.12);
+      --shadow:0 20px 50px rgba(4,6,18,.65);
+      --card0:#12172b;
+      --card1:#1a2039;
+      --card2:#1f2745;
+
+      --purple:#6f78ff;
+      --purple2:#8e8bff;
+      --pink:#ff7ac8;
+      --mint:#4fe6c0;
+      --gold:#ffcc6b;
+      --sky:#6ab6ff;
+
+      --pill-bg:rgba(111,120,255,.14);
+      --pill-border:rgba(111,120,255,.28);
+      --pill-text:#dbe1ff;
+      --toggle-bg:rgba(111,120,255,.12);
+      --toggle-border:rgba(111,120,255,.28);
+      --toggle-text:#dbe1ff;
+      --accent-soft:rgba(111,120,255,.18);
+      --accent-border:rgba(111,120,255,.28);
+      --accent-text:#dbe1ff;
+      --badge-bg:rgba(111,120,255,.14);
+      --badge-border:rgba(111,120,255,.28);
+      --badge-dot-shadow:rgba(111,120,255,.18);
+      --input-bg:rgba(8,12,24,.75);
+      --input-border:rgba(255,255,255,.12);
+      --input-placeholder:rgba(230,235,255,.45);
+      --tabs-bg1:rgba(0,0,0,0);
+      --tabs-bg2:rgba(10,14,28,.75);
+      --tabs-bg3:rgba(12,16,32,.98);
+      --tab-bg:rgba(255,255,255,.04);
+
+      --bgGlow1:rgba(111,120,255,.25);
+      --bgGlow2:rgba(255,122,200,.22);
+      --bgGlow3:rgba(79,230,192,.15);
+      --bgGlow4:rgba(255,255,255,.12);
+
+      --r:22px;
+      --r2:30px;
     }
 
     *{box-sizing:border-box}
@@ -45,9 +121,9 @@
       color:var(--ink);
       font-family:var(--b);
       background:
-        radial-gradient(900px 700px at 8% -8%, rgba(126,107,255,.25), transparent 55%),
-        radial-gradient(900px 700px at 110% 8%, rgba(255,116,164,.22), transparent 58%),
-        radial-gradient(900px 700px at 50% 110%, rgba(90,209,195,.16), transparent 58%),
+        radial-gradient(700px 520px at 8% -8%, var(--bgGlow1), transparent 55%),
+        radial-gradient(700px 520px at 110% 6%, var(--bgGlow2), transparent 58%),
+        radial-gradient(700px 520px at 50% 110%, var(--bgGlow3), transparent 58%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
@@ -56,8 +132,8 @@
       position:fixed;
       inset:0;
       pointer-events:none;
-      background:radial-gradient(600px 400px at 85% 5%, rgba(255,255,255,.35), transparent 60%);
-      opacity:.35;
+      background:radial-gradient(600px 400px at 85% 5%, var(--bgGlow4), transparent 60%);
+      opacity:.4;
     }
 
     button,input,select,textarea{font:inherit;color:inherit}
@@ -72,22 +148,22 @@
       padding:14px 16px;
       border:1px solid var(--stroke);
       border-radius:var(--r2);
-      background:linear-gradient(180deg, #ffffff, #f6f3ff);
+      background:linear-gradient(180deg, var(--card0), var(--card1));
       box-shadow:var(--shadow);
       min-width:min(520px, 100%);
     }
     .sigil{
       width:44px;height:44px;border-radius:14px;
-      border:1px solid rgba(126,107,255,.25);
+      border:1px solid rgba(111,120,255,.35);
       background:
-        radial-gradient(circle at 30% 30%, rgba(126,107,255,.25), transparent 55%),
-        radial-gradient(circle at 60% 75%, rgba(255,116,164,.20), transparent 50%),
-        #ffffff;
+        radial-gradient(circle at 30% 30%, rgba(111,120,255,.30), transparent 55%),
+        radial-gradient(circle at 60% 75%, rgba(255,122,200,.22), transparent 50%),
+        #10162b;
       display:grid;place-items:center;
       flex:0 0 auto;
-      box-shadow:0 14px 40px rgba(0,0,0,.35);
+      box-shadow:0 14px 40px rgba(0,0,0,.55);
     }
-    .sigil svg{width:22px;height:22px;fill:var(--purple)}
+    .sigil svg{width:22px;height:22px;fill:#e7e9ff}
     .title{display:flex;flex-direction:column;gap:4px;min-width:0}
     .title h1{
       font-family:var(--h);
@@ -106,7 +182,7 @@
       padding:14px 16px;
       border:1px solid var(--stroke);
       border-radius:var(--r2);
-      background:#ffffff;
+      background:linear-gradient(180deg, var(--card0), var(--card1));
       box-shadow:var(--shadow);
       min-width:280px;
       flex:0 0 auto;
@@ -116,28 +192,28 @@
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid rgba(126,107,255,.20);
-      background:rgba(126,107,255,.08);
+      border:1px solid var(--badge-border);
+      background:var(--badge-bg);
       font-weight:700;
       letter-spacing:.2px;
       font-size:12px;
     }
-    .badge .dot{width:8px;height:8px;border-radius:99px;background:var(--purple);box-shadow:0 0 0 6px rgba(126,107,255,.12)}
+    .badge .dot{width:8px;height:8px;border-radius:99px;background:var(--purple);box-shadow:0 0 0 6px var(--badge-dot-shadow)}
     .name{display:flex;align-items:center;gap:8px;min-width:0}
     .name input{
       width:100%;
       background:transparent;
-      border:1px dashed rgba(31,29,43,.18);
+      border:1px dashed var(--stroke-strong);
       border-radius:12px;
       padding:7px 10px;
       outline:none;
     }
-    .name input:focus{border-color:rgba(126,107,255,.55);box-shadow:0 0 0 4px rgba(126,107,255,.12)}
+    .name input:focus{border-color:rgba(111,120,255,.55);box-shadow:0 0 0 4px rgba(111,120,255,.12)}
     .stat{color:var(--muted);font-size:12px}
     .xpbar{
       height:12px;border-radius:999px;overflow:hidden;
-      background:rgba(126,107,255,.12);
-      border:1px solid rgba(126,107,255,.18);
+      background:var(--accent-soft);
+      border:1px solid var(--accent-border);
     }
     .xpfill{
       height:100%;
@@ -159,7 +235,7 @@
     .panel{
       border:1px solid var(--stroke);
       border-radius:var(--r2);
-      background:#ffffff;
+      background:linear-gradient(180deg, var(--card0), var(--card1));
       box-shadow:var(--shadow);
       padding:16px;
     }
@@ -175,9 +251,9 @@
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:6px 10px;border-radius:999px;
-      background:rgba(126,107,255,.10);
-      border:1px solid rgba(126,107,255,.20);
-      font-size:11px;font-weight:700;color:#5d4fff;
+      background:var(--pill-bg);
+      border:1px solid var(--pill-border);
+      font-size:11px;font-weight:700;color:var(--pill-text);
       letter-spacing:.3px;
       text-transform:uppercase;
     }
@@ -185,23 +261,35 @@
     .toggle-pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:6px 10px;border-radius:999px;
-      background:#f6f3ff;border:1px solid rgba(126,107,255,.20);
-      font-size:12px;font-weight:700;color:#554cff;cursor:pointer;user-select:none;
+      background:var(--toggle-bg);border:1px solid var(--toggle-border);
+      font-size:12px;font-weight:700;color:var(--toggle-text);cursor:pointer;user-select:none;
     }
 
     .cards{display:grid;gap:10px;margin-top:10px}
     .card{
       position:relative;
       padding:12px;
-      border:1px solid rgba(31,29,43,.08);
+      border:1px solid var(--stroke);
       border-radius:var(--r);
-      background:linear-gradient(180deg, #ffffff, #f7f5ff);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
     }
-    .card:hover{border-color:rgba(255,255,255,.18)}
+    .card:hover{border-color:rgba(255,255,255,.16)}
     .card .t{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .card .t strong{font-size:13px}
     .meta{color:var(--muted);font-size:12px;margin-top:4px}
-    .meta.ai{opacity:.9}
+    .quest-card{
+      border-radius:26px;
+      background:
+        radial-gradient(140px 120px at 12% 0%, rgba(111,120,255,.18), transparent 70%),
+        linear-gradient(180deg, var(--card1), var(--card2));
+      box-shadow:0 14px 32px rgba(8,12,26,.45);
+    }
+    .quest-card .t{align-items:flex-start}
+    .quest-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+    .quest-actions .left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .quest-actions .right{display:flex;align-items:center;gap:8px}
+    .icon-btn.sm{width:36px;height:36px;border-radius:12px}
+    .icon-btn.sm svg{width:16px;height:16px}
 
     .rem-item{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .rem-left{display:flex;align-items:center;gap:12px;min-width:0}
@@ -211,9 +299,9 @@
       letter-spacing:.5px;
       padding:6px 10px;
       border-radius:12px;
-      background:rgba(126,107,255,.12);
-      border:1px solid rgba(126,107,255,.25);
-      color:#6a5cff;
+      background:var(--accent-soft);
+      border:1px solid var(--accent-border);
+      color:var(--accent-text);
       flex:0 0 auto;
     }
     .rem-title{min-width:0}
@@ -231,39 +319,39 @@
     .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .btn{
       border-radius:999px;
-      border:1px solid rgba(31,29,43,.12);
-      background:#ffffff;
+      border:1px solid var(--stroke-strong);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
       padding:10px 14px;
       font-weight:700;
       font-size:13px;
       transition:transform .08s ease, border-color .15s ease, background .15s ease;
       user-select:none;
     }
-    .btn:hover{border-color:rgba(126,107,255,.35);background:#f5f2ff}
+    .btn:hover{border-color:rgba(111,120,255,.45)}
     .btn:active{transform:translateY(1px)}
     .btn.primary{
-      border-color:rgba(126,107,255,.45);
-      background:linear-gradient(180deg, #9c86ff, #7e6bff);
+      border-color:rgba(111,120,255,.55);
+      background:linear-gradient(180deg, #8f94ff, #6f78ff);
       color:#ffffff;
     }
     .btn.primary:hover{border-color:rgba(126,107,255,.65)}
     .btn.mint{
-      border-color:rgba(255,116,164,.45);
-      background:linear-gradient(180deg, #ff8ab7, #ff74a4);
+      border-color:rgba(79,230,192,.45);
+      background:linear-gradient(180deg, #5cf2c8, #41dcb6);
       color:#ffffff;
     }
     .btn.danger{
-      border-color:rgba(255,122,89,.40);
-      background:linear-gradient(180deg, rgba(255,122,89,.24), rgba(255,122,89,.12));
-      color:#ffffff;
+      border-color:rgba(255,122,89,.45);
+      background:linear-gradient(180deg, rgba(255,122,89,.35), rgba(255,122,89,.18));
+      color:#ffeceb;
     }
-    .btn.ghost{border-color:rgba(31,29,43,.10);background:transparent}
+    .btn.ghost{border-color:var(--stroke);background:transparent}
     .btn.sm{padding:7px 12px;font-size:12px}
     .btn.chip{
       border-radius:14px;
-      background:#f6f3ff;
-      border:1px solid rgba(126,107,255,.20);
-      color:#554cff;
+      background:rgba(111,120,255,.12);
+      border:1px solid rgba(111,120,255,.28);
+      color:#dbe1ff;
       font-weight:700;
     }
     .collapse-btn{
@@ -280,10 +368,10 @@
 
     .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .action-card{
-      border:1px solid rgba(31,29,43,.08);
+      border:1px solid var(--stroke);
       border-radius:16px;
       padding:12px;
-      background:linear-gradient(180deg, #ffffff, #f6f3ff);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
       display:flex;
       flex-direction:column;
       gap:10px;
@@ -298,8 +386,8 @@
     .action-row{display:flex;gap:8px;flex-wrap:wrap}
     .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .mini-card{
-      border:1px solid rgba(31,29,43,.08);
-      background:#f8f6ff;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
       border-radius:14px;
       padding:10px;
       display:flex;flex-direction:column;gap:6px;
@@ -309,8 +397,8 @@
     .icon-btn{
       width:44px;height:44px;
       border-radius:14px;
-      border:1px solid rgba(31,29,43,.12);
-      background:#ffffff;
+      border:1px solid var(--stroke-strong);
+      background:linear-gradient(180deg, var(--card1), var(--card2));
       display:grid;place-items:center;
     }
     .icon-btn svg{width:20px;height:20px;fill:currentColor;opacity:.9}
@@ -321,13 +409,14 @@
     input[type="text"], input[type="number"], select, textarea{
       width:100%;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
       padding:10px 11px;
       outline:none;
     }
     textarea{min-height:74px;resize:vertical}
-    input:focus,select:focus,textarea:focus{border-color:rgba(84,166,255,.45);box-shadow:0 0 0 4px rgba(84,166,255,.10)}
+    input::placeholder, textarea::placeholder{color:var(--input-placeholder)}
+    input:focus,select:focus,textarea:focus{border-color:rgba(106,182,255,.45);box-shadow:0 0 0 4px rgba(106,182,255,.12)}
     .form .wide{grid-column:1 / -1}
     @media (max-width: 520px){.form{grid-template-columns:1fr}}
 
@@ -336,9 +425,9 @@
       display:flex;justify-content:center;
       padding:10px 12px calc(14px + env(safe-area-inset-bottom));
       background:
-        linear-gradient(180deg, rgba(0,0,0,0), rgba(255,255,255,.85) 22%, rgba(255,255,255,.98));
+        linear-gradient(180deg, var(--tabs-bg1), var(--tabs-bg2) 22%, var(--tabs-bg3));
       backdrop-filter:blur(12px);
-      border-top:1px solid rgba(31,29,43,.10);
+      border-top:1px solid var(--stroke);
       z-index:50;
     }
     .tabbar{
@@ -348,15 +437,15 @@
       gap:8px;
       padding:6px;
       border-radius:20px;
-      background:#ffffff;
-      border:1px solid rgba(31,29,43,.08);
+      background:linear-gradient(180deg, var(--card0), var(--card1));
+      border:1px solid var(--stroke-strong);
     }
     .tab{
       display:flex;align-items:center;justify-content:center;gap:10px;
       border-radius:16px;
       padding:10px 10px;
-      border:1px solid rgba(31,29,43,.08);
-      background:#f6f3ff;
+      border:1px solid var(--stroke);
+      background:var(--tab-bg);
       font-weight:800;
       letter-spacing:.2px;
       font-size:13px;
@@ -364,10 +453,10 @@
     .tab:active{transform:translateY(1px)}
     .tab svg{width:18px;height:18px;fill:currentColor;opacity:.9}
     .tab[aria-selected="true"]{
-      border-color:rgba(126,107,255,.40);
-      background:linear-gradient(180deg, #9c86ff, #7e6bff);
+      border-color:rgba(111,120,255,.45);
+      background:linear-gradient(180deg, #8f94ff, #6f78ff);
       color:#ffffff;
-      box-shadow:0 0 0 4px rgba(126,107,255,.15);
+      box-shadow:0 0 0 4px rgba(111,120,255,.18);
     }
     @media (max-width: 640px){
       .wrap{padding:16px 14px 122px}
@@ -408,9 +497,9 @@
     .modal{
       width:min(640px, 100%);
       border-radius:28px;
-      border:1px solid rgba(31,29,43,.10);
-      background:linear-gradient(180deg, #ffffff, #f6f3ff);
-      box-shadow:0 28px 120px rgba(88,72,155,.35);
+      border:1px solid var(--stroke-strong);
+      background:linear-gradient(180deg, var(--card0), var(--card1));
+      box-shadow:0 28px 120px rgba(0,0,0,.55);
       padding:16px;
     }
     .modal h3{margin:0 0 8px;font-family:var(--h);font-size:16px}
@@ -418,8 +507,8 @@
     .mono{
       width:100%;
       border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
+      border:1px solid var(--input-border);
+      background:var(--input-bg);
       padding:10px 11px;
       font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
       color:rgba(238,240,255,.9);
@@ -452,20 +541,6 @@
           <button class="btn danger" id="io-reset">Сброс</button>
         </div>
         <p class="hint" style="margin-top:10px">Импорт перезапишет текущий прогресс. Сброс удалит всё из localStorage.</p>
-        <div class="btns" style="margin-top:8px">
-          <button class="btn chip" id="io-ai-toggle">AI импорт</button>
-        </div>
-        <div id="ai-io" style="display:none;margin-top:10px">
-          <div class="field">
-            <label for="ai-text">AI JSON (оценки)</label>
-            <textarea class="mono" id="ai-text" spellcheck="false" placeholder='{"items":[{"id":"q1","title":"...","xp":40,"reason":"..."}]}'></textarea>
-          </div>
-          <div class="btns">
-            <button class="btn mint" id="ai-apply">Применить AI</button>
-            <button class="btn ghost" id="ai-clear">Очистить</button>
-          </div>
-          <p class="hint" style="margin-top:8px">Вставь JSON с оценками от AI. Совпадение идёт по id, затем по названию.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -477,18 +552,8 @@
       <div class="btns">
         <button class="btn mint" id="settings-notify">Уведомления</button>
         <button class="btn" id="settings-data">Данные</button>
-        <button class="btn chip" id="settings-test-key">Проверить ключ</button>
+        <button class="btn chip" id="theme-toggle">Тема: Светлая</button>
         <button class="btn ghost" id="settings-close">Закрыть</button>
-      </div>
-      <div class="field" style="margin-top:12px">
-        <label for="ai-key">Claude API ключ (для оценки XP)</label>
-        <input id="ai-key" type="password" placeholder="sk-ant-..." autocomplete="off" />
-        <p class="hint">Ключ хранится локально в приложении. Не делись им с другими.</p>
-      </div>
-      <div class="field" style="margin-top:8px">
-        <label for="ai-model">Claude модель</label>
-        <input id="ai-model" type="text" placeholder="claude-3-5-sonnet-latest" autocomplete="off" />
-        <p class="hint">Если модель недоступна, замени на ту, что разрешена в твоём аккаунте.</p>
       </div>
     </div>
   </div>
@@ -707,7 +772,7 @@
               </div>
               <div class="btns" style="margin-top:0">
                 <button class="btn primary" type="submit">Создать</button>
-                <button class="btn chip" type="button" id="q-ai">AI XP</button>
+                <button class="btn chip" type="button" id="q-auto">Авто XP</button>
                 <button class="btn ghost" type="button" id="q-seed">Добавить примеры</button>
               </div>
               </form>
@@ -806,9 +871,8 @@
         reminders: [],
         nextReminderId: 1,
         notificationsEnabled: false,
-        aiKey: "",
-        aiModel: "claude-3-5-sonnet-latest",
         hideCompletedQuests: true,
+        theme: "dark",
         showQuestForm: false,
         showWorkoutForm: false,
         showReminderForm: false
@@ -830,9 +894,8 @@
         merged.reminders = Array.isArray(data.reminders) ? data.reminders : merged.reminders;
         merged.nextReminderId = clampInt(data.nextReminderId || merged.nextReminderId, 1, 999999);
         merged.notificationsEnabled = Boolean(data.notificationsEnabled);
-        merged.aiKey = typeof data.aiKey === "string" ? data.aiKey : "";
-        merged.aiModel = typeof data.aiModel === "string" && data.aiModel.trim() ? data.aiModel.trim() : merged.aiModel;
         merged.hideCompletedQuests = data.hideCompletedQuests !== false;
+        merged.theme = data.theme === "light" || data.theme === "dark" ? data.theme : merged.theme;
         merged.showQuestForm = Boolean(data.showQuestForm);
         merged.showWorkoutForm = Boolean(data.showWorkoutForm);
         merged.showReminderForm = Boolean(data.showReminderForm);
@@ -885,22 +948,16 @@
     const elModalMore = $("modal-more");
     const elIO = $("io");
     const elIOText = $("io-text");
-    const elAiIO = $("ai-io");
-    const elAiIOToggle = $("io-ai-toggle");
-    const elAiText = $("ai-text");
-    const elAiApply = $("ai-apply");
-    const elAiClear = $("ai-clear");
     const elSettingsModal = $("settingsModal");
     const elSettingsClose = $("settings-close");
     const elSettingsNotify = $("settings-notify");
     const elSettingsData = $("settings-data");
+    const elThemeToggle = $("theme-toggle");
     const elOpenSettings = $("open-settings");
-    const elAiKey = $("ai-key");
-    const elAiModel = $("ai-model");
-    const elQuestAi = $("q-ai");
-    const elSettingsTestKey = $("settings-test-key");
+    const elQuestAuto = $("q-auto");
 
     let toastTimer = null;
+    applyTheme(S.theme);
 
     function openModal(title, body){
       elModalTitle.textContent = title;
@@ -911,8 +968,21 @@
     }
     function openSettings(){
       elSettingsModal.classList.add("open");
-      if (elAiKey) elAiKey.value = S.aiKey || "";
-      if (elAiModel) elAiModel.value = S.aiModel || "claude-3-5-sonnet-latest";
+    }
+    function applyTheme(mode){
+      const root = document.documentElement;
+      if(mode === "dark"){
+        root.setAttribute("data-theme", "dark");
+      }else{
+        root.removeAttribute("data-theme");
+      }
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta){
+        meta.setAttribute("content", mode === "dark" ? "#0b1020" : "#f1ecff");
+      }
+      if(elThemeToggle){
+        elThemeToggle.textContent = mode === "dark" ? "Тема: Тёмная" : "Тема: Светлая";
+      }
     }
     function closeSettings(){
       elSettingsModal.classList.remove("open");
@@ -922,7 +992,6 @@
       elIO.style.display = "block";
       elModalMore.textContent = "Скрыть";
       elIOText.value = JSON.stringify(S, null, 2);
-      if (elAiIO) elAiIO.style.display = "none";
     }
     function closeModal(){
       elModalBg.classList.remove("open");
@@ -1150,15 +1219,19 @@
         const badge = q.repeat === "daily"
           ? `<span class="badge" style="border-color:rgba(245,195,75,.24)"><span class="dot"></span>Ежедневно</span>`
           : `<span class="badge" style="border-color:rgba(255,255,255,.14)"><span class="dot" style="background:rgba(238,240,255,.75);box-shadow:0 0 0 6px rgba(238,240,255,.10)"></span>Один раз</span>`;
-        const aiNote = q.aiReason ? `<div class="meta ai">AI: ${esc(q.aiReason)}</div>` : "";
         return `
-          <div class="card" style="${doneNow ? "opacity:.72" : ""}">
+          <div class="card quest-card" style="${doneNow ? "opacity:.72" : ""}">
             <div class="t"><strong>${esc(q.title)}</strong>${badge}</div>
             <div class="meta">${q.notes ? esc(q.notes) + " · " : ""}<strong>${q.xp} XP</strong>${doneNow ? " · Выполнено" : ""}</div>
-            ${aiNote}
-            <div class="btns">
-              <button class="btn primary" ${doneNow ? "disabled" : ""} data-quest="${q.id}">${doneNow ? "Готово" : "Завершить"}</button>
-              <button class="btn ghost" data-quest-del="${q.id}">Удалить</button>
+            <div class="quest-actions">
+              <div class="left">
+                <button class="btn primary" ${doneNow ? "disabled" : ""} data-quest="${q.id}">${doneNow ? "Готово" : "Завершить"}</button>
+              </div>
+              <div class="right">
+                <button class="icon-btn sm" title="Удалить" aria-label="Удалить" data-quest-del="${q.id}">
+                  <svg viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM7 9h2v9H7V9z"/></svg>
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -1260,168 +1333,48 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // AI helpers
-    function getClaudeText(data){
-      const parts = Array.isArray(data?.content) ? data.content : [];
-      return parts.filter(p => p && p.type === "text" && typeof p.text === "string")
-        .map(p => p.text)
-        .join("")
-        .trim();
-    }
+    // Авто XP (офлайн)
+    function estimateXpLocal(title, notes, repeat){
+      const text = `${title} ${notes || ""}`.toLowerCase();
+      let xp = 15;
+      const reasons = [];
 
-    async function postClaude(body){
-      const url = "https://api.anthropic.com/v1/messages";
-      const headers = {
-        "content-type": "application/json",
-        "x-api-key": S.aiKey,
-        "anthropic-version": "2023-06-01"
-      };
-      const capHttp = window.CapacitorHttp || (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.CapacitorHttp);
-      if(isNative() && capHttp && typeof capHttp.request === "function"){
-        const res = await capHttp.request({ method: "POST", url, headers, data: body });
-        const ok = res.status >= 200 && res.status < 300;
-        let data = res.data;
-        if(typeof data === "string"){
-          try{ data = JSON.parse(data); }catch{}
-        }
-        return { ok, status: res.status, data, raw: typeof res.data === "string" ? res.data : JSON.stringify(res.data || {}) };
+      const minMatch = text.match(/(\d+)\s*(мин|минут|минуты|min)/);
+      if(minMatch){
+        const mins = clampInt(minMatch[1], 1, 300);
+        xp += Math.min(40, Math.round(mins / 2));
+        reasons.push(`${mins} мин`);
       }
-      const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
-      const raw = await res.text();
-      let data = null;
-      try{ data = JSON.parse(raw); }catch{}
-      return { ok: res.ok, status: res.status, data, raw };
-    }
-
-    async function estimateXpAI(title, notes){
-      if(!S.aiKey){
-        openSettings();
-        throw new Error("NO_KEY");
-      }
-      const prompt = `
-Ты ассистент, оценивающий XP за квесты в RPG-трекере.
-Дай только JSON: {"xp": число от 10 до 150, "reason": кратко}
-Квест: ${title}
-Заметка: ${notes || "нет"}
-Сложность оцени по времени, усилию и дисциплине.
-      `.trim();
-      const model = (S.aiModel || "claude-3-5-sonnet-latest").trim();
-      const body = {
-        model,
-        max_tokens: 120,
-        temperature: 0.2,
-        messages: [
-          { role: "user", content: prompt }
-        ]
-      };
-
-      const { ok, status, data, raw } = await postClaude(body);
-      if(!ok){
-        const msg = data && data.error && data.error.message ? data.error.message : (raw || "").slice(0, 200);
-        const code = data && data.error && data.error.code ? data.error.code : "";
-        throw new Error(`HTTP_${status} ${code} ${msg}`.trim());
+      const hourMatch = text.match(/(\d+)\s*(час|часа|часов|h|hour)/);
+      if(hourMatch){
+        const h = clampInt(hourMatch[1], 1, 12);
+        xp += Math.min(60, h * 20);
+        reasons.push(`${h} ч`);
       }
 
-      const text = getClaudeText(data);
-      if(!text) throw new Error("NO_OUTPUT");
-      let parsed = null;
-      try{ parsed = JSON.parse(text); }catch{}
-      if(!parsed){
-        const m = text.match(/\{[\s\S]*\}/);
-        if(m){
-          try{ parsed = JSON.parse(m[0]); }catch{}
-        }
+      const effortWords = ["трен", "бег", "кардио", "сил", "спорт", "отжим", "присед", "планк", "йог", "ходьб", "жим"];
+      if(effortWords.some(w => text.includes(w))){
+        xp += 20;
+        reasons.push("физнагрузка");
       }
-      if(!parsed) throw new Error("BAD_JSON");
-      const xp = clampInt(parsed.xp, 10, 150);
-      return { xp, reason: String(parsed.reason || "").slice(0, 120) };
-    }
+      const mindWords = ["читать", "книга", "уч", "учеб", "курс", "англ", "писать", "код", "программ"];
+      if(mindWords.some(w => text.includes(w))){
+        xp += 12;
+        reasons.push("умственное усилие");
+      }
+      const disciplineWords = ["каждый", "ежеднев", "без", "вовремя", "режим"];
+      if(disciplineWords.some(w => text.includes(w))){
+        xp += 10;
+        reasons.push("дисциплина");
+      }
 
-    function normalizeAiItems(data){
-      if(Array.isArray(data)) return data;
-      if(data && Array.isArray(data.items)) return data.items;
-      return [];
-    }
+      if(repeat === "daily"){
+        xp = Math.min(xp, 80);
+      }
 
-    function applyAiImport(text){
-      let data = null;
-      try{ data = JSON.parse(text); }catch{}
-      const items = normalizeAiItems(data);
-      if(!items.length){
-        openModal("AI импорт", "Не нашёл список items. Вставь JSON как в примере.");
-        return;
-      }
-      let matched = 0;
-      const byId = new Map(S.quests.map(q => [String(q.id), q]));
-      for (const it of items){
-        if(!it) continue;
-        const id = it.id != null ? String(it.id) : "";
-        const title = String(it.title || "").trim();
-        let q = null;
-        if(id && byId.has(id)) q = byId.get(id);
-        if(!q && title){
-          const low = title.toLowerCase();
-          q = S.quests.find(x => String(x.title || "").toLowerCase() === low);
-        }
-        if(!q) continue;
-        matched += 1;
-        const xp = clampInt(it.xp, 5, 500);
-        if(Number.isFinite(xp)) q.xp = xp;
-        const reason = String(it.reason || "").trim().slice(0, 140);
-        if(reason) q.aiReason = reason;
-      }
-      if(!matched){
-        openModal("AI импорт", "Совпадений не найдено. Проверь id или названия квестов.");
-        return;
-      }
-      saveState();
-      renderHome();
-      renderQuests();
-      showToast(0, `AI обновил ${matched} квестов`);
-    }
-
-    async function testAiKey(){
-      if(elAiKey){
-        S.aiKey = elAiKey.value.trim();
-        saveState();
-      }
-      if(elAiModel){
-        const v = elAiModel.value.trim();
-        S.aiModel = v || S.aiModel || "claude-3-5-sonnet-latest";
-        saveState();
-      }
-      if(!S.aiKey){
-        openSettings();
-        openModal("AI ключ", "Вставь Claude ключ и попробуй снова.");
-        return;
-      }
-      const prev = elSettingsTestKey ? elSettingsTestKey.textContent : "";
-      if(elSettingsTestKey){
-        elSettingsTestKey.disabled = true;
-        elSettingsTestKey.textContent = "Проверяю...";
-      }
-      try{
-        await estimateXpAI("Проверка ключа", "Короткий тест");
-        showToast(0, "Ключ работает");
-      }catch(e){
-        const msg = String(e.message || "Ошибка");
-        let hint = msg;
-        if(msg.includes("401") || msg.includes("403")){
-          hint = "Похоже, ключ неверный или не активирован.";
-        }else if(msg.includes("insufficient_quota") || msg.includes("429")){
-          hint = "Квота закончилась или нет биллинга на аккаунте.";
-        }else if(msg.includes("Failed to fetch")){
-          hint = "Запрос из браузера может блокироваться. Проверь в APK.";
-        }else if(msg.toLowerCase().includes("model")){
-          hint = "Модель недоступна для этого ключа. Попробуй другую в настройках.";
-        }
-        openModal("AI ключ", `Не удалось проверить ключ. ${hint}`);
-      }finally{
-        if(elSettingsTestKey){
-          elSettingsTestKey.disabled = false;
-          elSettingsTestKey.textContent = prev || "Проверить ключ";
-        }
-      }
+      xp = clampInt(xp, 10, 150);
+      const reason = reasons.length ? reasons.join(", ") : "оценка по времени и усилию";
+      return { xp, reason };
     }
 
     // Tabs
@@ -1487,31 +1440,19 @@
       showToast(0, "Квест создан");
     });
 
-    if (elQuestAi) {
-      elQuestAi.addEventListener("click", async () => {
+    if (elQuestAuto) {
+      elQuestAuto.addEventListener("click", () => {
         const title = $("q-title").value.trim();
         const notes = ($("q-notes").value || "").trim();
         if(!title){
-          openModal("AI XP", "Сначала введи название квеста.");
+          openModal("Авто XP", "Сначала введи название квеста.");
           return;
         }
-        elQuestAi.disabled = true;
-        elQuestAi.textContent = "Оцениваю...";
-        try{
-          const res = await estimateXpAI(title, notes);
-          $("q-xp").value = res.xp;
-          const note = res.reason ? `AI XP: ${res.xp} • ${res.reason}` : `AI XP: ${res.xp}`;
-          showToast(0, note);
-        }catch(e){
-          if(String(e.message) === "NO_KEY"){
-            openModal("AI XP", "Добавь Claude ключ в настройках (шестерёнка).");
-          }else{
-            openModal("AI XP", "Не удалось получить оценку. Проверь ключ и интернет.");
-          }
-        }finally{
-          elQuestAi.disabled = false;
-          elQuestAi.textContent = "AI XP";
-        }
+        const repeat = $("q-repeat").value;
+        const res = estimateXpLocal(title, notes, repeat);
+        $("q-xp").value = res.xp;
+        const note = res.reason ? `Авто XP: ${res.xp} • ${res.reason}` : `Авто XP: ${res.xp}`;
+        showToast(0, note);
       });
     }
 
@@ -1624,42 +1565,11 @@
         openDataModal();
       });
     }
-    if (elSettingsTestKey) {
-      elSettingsTestKey.addEventListener("click", () => {
-        testAiKey();
-      });
-    }
-    if (elAiKey) {
-      const syncAiKey = () => {
-        S.aiKey = elAiKey.value.trim();
+    if (elThemeToggle) {
+      elThemeToggle.addEventListener("click", () => {
+        S.theme = S.theme === "dark" ? "light" : "dark";
         saveState();
-      };
-      elAiKey.addEventListener("input", syncAiKey);
-      elAiKey.addEventListener("change", syncAiKey);
-    }
-    if (elAiModel) {
-      const syncAiModel = () => {
-        const v = elAiModel.value.trim();
-        S.aiModel = v || S.aiModel || "claude-3-5-sonnet-latest";
-        saveState();
-      };
-      elAiModel.addEventListener("input", syncAiModel);
-      elAiModel.addEventListener("change", syncAiModel);
-    }
-    if (elAiIOToggle && elAiIO) {
-      elAiIOToggle.addEventListener("click", () => {
-        const open = elAiIO.style.display !== "none";
-        elAiIO.style.display = open ? "none" : "block";
-      });
-    }
-    if (elAiApply && elAiText) {
-      elAiApply.addEventListener("click", () => {
-        applyAiImport(elAiText.value || "");
-      });
-    }
-    if (elAiClear && elAiText) {
-      elAiClear.addEventListener("click", () => {
-        elAiText.value = "";
+        applyTheme(S.theme);
       });
     }
     elModalMore.addEventListener("click", () => {
